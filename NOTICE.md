@@ -30,5 +30,5 @@ If you'd like to reference or feature the Hipster Holiday brand, please [contact
 
 ---
 
-Stay brooding.
+Have a very hipster holiday.
 
