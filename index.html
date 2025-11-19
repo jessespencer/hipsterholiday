@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hipster Holiday 2025</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,396 +15,384 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(to bottom, #0a1628, #1a2d4d);
+            font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #010310;
             color: #fff;
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 3s infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
+        .page-wrapper {
             position: relative;
-            z-index: 1;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-
-        .poster-image {
-            margin-bottom: 40px;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        }
-
-        .poster-image img {
             width: 100%;
-            max-width: 600px;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1280px;
+            height: auto;
+            z-index: 0;
+        }
+
+        .hero-bg img {
+            width: 100%;
             height: auto;
             display: block;
-            margin: 0 auto;
-            border-radius: 15px;
         }
 
-        .date {
-            font-size: 18px;
-            letter-spacing: 8px;
-            margin-bottom: 30px;
-            color: #a8c5e6;
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .title {
-            font-size: 72px;
-            font-weight: bold;
-            color: #ff3333;
-            text-shadow: 
-                0 0 10px #ff3333,
-                0 0 20px #ff3333,
-                0 0 30px #ff3333,
-                0 0 40px #ff1a1a;
-            margin-bottom: 10px;
-            letter-spacing: 8px;
+        .header-date {
+            padding: 16px 32px;
+            margin-top: 0;
+        }
+
+        .header-date p {
+            font-family: 'Figtree', sans-serif;
+            font-weight: 300;
+            font-size: 20px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-align: center;
+            line-height: 1.25;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 48px;
+            padding: 0;
+            margin-top: 670px;
+            width: 100%;
         }
 
         .subtitle {
-            font-size: 14px;
-            letter-spacing: 4px;
-            color: #a8c5e6;
-            margin-bottom: 20px;
+            font-family: 'Figtree', sans-serif;
+            font-weight: 300;
+            font-size: 20px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-align: center;
+            line-height: 1.25;
         }
 
-        .year {
-            font-size: 48px;
-            font-weight: bold;
-            color: #ff3333;
-            text-shadow: 
-                0 0 10px #ff3333,
-                0 0 20px #ff3333;
-            letter-spacing: 4px;
+        .hero-logo {
+            width: 500px;
+            height: 325px;
+            mix-blend-mode: lighten;
         }
 
-        .event-details {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 40px;
-            margin-bottom: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        .hero-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .detail-item {
-            margin-bottom: 25px;
+        .details-section {
             display: flex;
-            align-items: start;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            width: 100%;
         }
 
-        .detail-item:last-child {
-            margin-bottom: 0;
+        .section-title {
+            font-family: 'Figtree', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            line-height: 19px;
+            letter-spacing: 0;
+            text-transform: uppercase;
+            color: #d81e1e;
+            text-align: center;
         }
 
-        .detail-icon {
-            font-size: 24px;
-            margin-right: 15px;
-            color: #ff3333;
+        .event-card {
+            background: #11131f;
+            border-radius: 32px;
+            padding: 32px;
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            align-items: center;
+            justify-content: center;
         }
 
-        .detail-content h3 {
-            font-size: 18px;
-            margin-bottom: 5px;
-            color: #ff3333;
+        .event-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
         }
 
-        .detail-content p {
+        .event-content {
+            font-family: 'Figtree', sans-serif;
+            font-weight: 400;
             font-size: 16px;
-            line-height: 1.6;
-            color: #d0e0f0;
+            line-height: 19px;
+            color: #ffffff;
+            text-align: center;
+            width: 100%;
+        }
+
+        .event-content p {
+            margin: 0;
+            color: #ffffff;
+        }
+
+        .body-text {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        .body-text p {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        .event-body {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .event-body p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        .event-content strong {
+            font-weight: 700;
         }
 
         .rsvp-section {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .rsvp-section h2 {
-            font-size: 32px;
-            margin-bottom: 30px;
-            text-align: center;
-            color: #ff3333;
-            text-shadow: 0 0 10px rgba(255, 51, 51, 0.5);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #a8c5e6;
-            letter-spacing: 1px;
-        }
-
-        input, select, textarea {
+            margin: 0;
+            max-width: 500px;
             width: 100%;
-            padding: 12px 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 16px;
-            transition: all 0.3s;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #ff3333;
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 15px rgba(255, 51, 51, 0.3);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .submit-btn {
+        .google-form-container {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            margin-top: 24px;
             width: 100%;
-            padding: 15px;
-            background: #ff3333;
-            color: white;
+            max-width: 500px;
+        }
+
+        .google-form-container iframe {
+            width: 100%;
+            height: 900px;
             border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            letter-spacing: 2px;
-            transition: all 0.3s;
-            box-shadow: 0 0 20px rgba(255, 51, 51, 0.4);
-        }
-
-        .submit-btn:hover {
-            background: #ff1a1a;
-            transform: translateY(-2px);
-            box-shadow: 0 0 30px rgba(255, 51, 51, 0.6);
-        }
-
-        .success-message {
-            display: none;
-            background: rgba(34, 197, 94, 0.2);
-            border: 1px solid rgba(34, 197, 94, 0.5);
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-            text-align: center;
-            animation: fadeIn 0.5s;
-        }
-
-        .success-message.show {
             display: block;
+            margin: 0;
+            padding: 0;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @media (max-width: 1280px) {
+            .hero-bg {
+                width: 100%;
+                max-width: 1280px;
+            }
+            
+            .hero-logo {
+                max-width: 500px;
+            }
         }
 
         @media (max-width: 768px) {
-            .title {
-                font-size: 48px;
+            .hero-bg {
+                width: 800px;
+                min-width: 800px;
             }
-            
-            .year {
-                font-size: 36px;
+
+            .header-date p,
+            .subtitle {
+                font-size: 16px;
+                letter-spacing: 5px;
             }
-            
-            .event-details, .rsvp-section {
-                padding: 25px;
+
+            .main-content {
+                margin-top: 470px;
+                gap: 40px;
+                padding: 0 24px;
+                width: 100%;
+            }
+
+            .hero-logo {
+                width: 100%;
+                max-width: 500px;
+                height: auto;
+                aspect-ratio: 1140 / 741;
+            }
+
+            .hero-logo img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+
+            .section-title {
+                font-size: 20px;
+            }
+
+            .details-section {
+                gap: 24px;
+                width: 100%;
+            }
+
+            .event-card {
+                width: 100%;
+                max-width: 100%;
+                padding: 32px;
+            }
+
+            .event-content {
+                font-size: 16px;
+                line-height: 19px;
+            }
+
+            .rsvp-section {
+                margin: 0;
+                padding: 0;
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .google-form-container {
+                margin-top: 24px;
+                max-width: 100%;
+            }
+
+            .google-form-container iframe {
+                height: 1000px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-bg {
+                width: 800px;
+                min-width: 800px;
+            }
+
+            .header-date p,
+            .subtitle {
+                font-size: 16px;
+                letter-spacing: 5px;
+            }
+
+            .main-content {
+                margin-top: 470px;
+                gap: 40px;
+                padding: 0 24px;
+            }
+
+            .hero-logo {
+                width: 100%;
+                max-width: 500px;
+                height: auto;
+                aspect-ratio: 1140 / 741;
+            }
+
+            .section-title {
+                font-size: 20px;
+            }
+
+            .details-section {
+                gap: 24px;
+                width: 100%;
+            }
+
+            .event-card {
+                padding: 32px;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .event-content {
+                font-size: 16px;
+                line-height: 19px;
+            }
+
+            .event-content p {
+                margin-bottom: 32px;
+            }
+
+            .rsvp-section {
+                max-width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <div class="stars" id="stars"></div>
-    
-    <div class="container">
-        <header>
-            <div class="poster-image">
-                <img src="https://placeholder-image-url.jpg" alt="Hipster Holiday 2025 Poster" id="posterImg">
-            </div>
-            <div class="date">FRIDAY, DECEMBER 12TH, 6PM</div>
-            <div class="subtitle">A SPENCER FAMILY ORIGINAL SERIES</div>
-            <h1 class="title">HIPSTER<br>HOLIDAY</h1>
-            <div class="year">2025</div>
-        </header>
-
-        <div class="event-details">
-            <div class="detail-item">
-                <div class="detail-icon">📅</div>
-                <div class="detail-content">
-                    <h3>Date & Time</h3>
-                    <p>Friday, December 12th, 2025 at 6:00 PM</p>
-                </div>
-            </div>
-
-            <div class="detail-item">
-                <div class="detail-icon">🏡</div>
-                <div class="detail-content">
-                    <h3>Location</h3>
-                    <p>The Spencer Family Cabin<br>
-                    Pine Forest Retreat, Colorado</p>
-                </div>
-            </div>
-
-            <div class="detail-item">
-                <div class="detail-icon">🎄</div>
-                <div class="detail-content">
-                    <h3>What to Expect</h3>
-                    <p>Join us for a cozy evening of holiday cheer, festive lights, warm drinks, and unforgettable memories in the woods. Dress warm and bring your holiday spirit!</p>
-                </div>
-            </div>
-
-            <div class="detail-item">
-                <div class="detail-icon">🎁</div>
-                <div class="detail-content">
-                    <h3>Special Activities</h3>
-                    <p>Hot cocoa bar, bonfire stories, gift exchange, and a mystery adventure through the forest!</p>
-                </div>
-            </div>
+    <div class="page-wrapper">
+        <div class="hero-bg">
+            <img src="https://raw.githubusercontent.com/jessespencer/hipsterholiday/refs/heads/main/assets/hh-2025-banner.jpg" alt="Hipster Holiday Banner">
         </div>
+        
+        <div class="content-wrapper">
+            <div class="header-date">
+                <p>FRIDAY, DECEMBER 12TH, 6PM</p>
+            </div>
 
-        <div class="rsvp-section">
-            <h2>RSVP</h2>
-            <form id="rsvpForm">
-                <div class="form-group">
-                    <label for="name">Full Name *</label>
-                    <input type="text" id="name" required>
+            <div class="main-content">
+                <p class="subtitle">A SPENCER FAMILY ORIGINAL SERIES</p>
+                
+                <div class="hero-logo">
+                    <img src="https://raw.githubusercontent.com/jessespencer/hipsterholiday/refs/heads/main/assets/hh-logo-2025.png" alt="Hipster Holiday Logo">
                 </div>
 
-                <div class="form-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" id="email" required>
+                <div class="details-section">
+                    <h2 class="section-title">DETAILS</h2>
+                    
+                    <div class="event-card">
+                        <div class="event-section">
+                            <p class="event-content"><strong>📅 When the portal unofficially opens</strong></p>
+                            <p class="event-content body-text">Friday, December 12th, 2025 at 6:00 PM</p>
+                        </div>
+                        
+                        <div class="event-section">
+                            <p class="event-content"><strong>🏡 Look for the suspicious flickering lights</strong></p>
+                            <p class="event-content body-text">3268 W 101st Circle, Westminster, CO 80031</p>
+                        </div>
+                        
+                        <div class="event-section">
+                            <p class="event-content"><strong>🎄 Step into Friendsmas… Stranger Things edition.</strong></p>
+                            <div class="event-content body-text event-body">
+                                <p>Homemade cookies, steaming glühwein, dangerously good food, and games that may or may not summon a Demogorgon.</p>
+                                <p>Wear your finest Christmas drip or lean fully into that 80's Hawkins aesthetic—think retro sweaters, mall-rat chic, or "I'm just stopping by to help close a portal to another dimension real quick."</p>
+                                <p>Bring one white elephant gift per person — pre-loved, thrifted oddities highly encouraged (keep new purchases under $20).</p>
+                                <p>And unless your tiny human is still powered by Mama's liquid gold, this is a night for the grown-ups to battle vecna in peace. 🎄✨</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="guests">Number of Guests *</label>
-                    <select id="guests" required>
-                        <option value="">Select...</option>
-                        <option value="1">1 Guest</option>
-                        <option value="2">2 Guests</option>
-                        <option value="3">3 Guests</option>
-                        <option value="4">4 Guests</option>
-                        <option value="5">5+ Guests</option>
-                    </select>
+                <div class="rsvp-section">
+                    <h2 class="section-title">RSVP</h2>
+                    <div class="google-form-container">
+                        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSePXus4A9gMB21tUeiLfkFvC9pC79k9pBbxnW1b2IG5tVf2hw/viewform?embedded=true">Loading…</iframe>
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    <label for="dietary">Dietary Restrictions</label>
-                    <input type="text" id="dietary" placeholder="Optional">
-                </div>
-
-                <div class="form-group">
-                    <label for="message">Message to the Spencers</label>
-                    <textarea id="message" placeholder="Share your excitement or any questions..."></textarea>
-                </div>
-
-                <button type="submit" class="submit-btn">CONFIRM ATTENDANCE</button>
-            </form>
-
-            <div class="success-message" id="successMessage">
-                <h3>🎉 You're All Set!</h3>
-                <p>Thank you for your RSVP! We can't wait to celebrate with you on December 12th!</p>
             </div>
         </div>
     </div>
-
-    <script>
-        // Create stars
-        const starsContainer = document.getElementById('stars');
-        for (let i = 0; i < 100; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            star.style.width = Math.random() * 3 + 'px';
-            star.style.height = star.style.width;
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.animationDelay = Math.random() * 3 + 's';
-            starsContainer.appendChild(star);
-        }
-
-        // Handle poster image upload
-        const posterImg = document.getElementById('posterImg');
-        
-        // Check if there's an uploaded file in the conversation
-        // For now, hide the placeholder until an image is provided
-        posterImg.style.display = 'none';
-        
-        // If you want to add your poster image, you can:
-        // 1. Upload it to an image hosting service and replace the src URL
-        // 2. Or use a base64 encoded version of the image
-
-        // Handle form submission
-        const form = document.getElementById('rsvpForm');
-        const successMessage = document.getElementById('successMessage');
-
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form data
-            const formData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                guests: document.getElementById('guests').value,
-                dietary: document.getElementById('dietary').value,
-                message: document.getElementById('message').value
-            };
-
-            // Store in memory
-            console.log('RSVP Submitted:', formData);
-            
-            // Show success message
-            successMessage.classList.add('show');
-            form.reset();
-            
-            // Scroll to success message
-            successMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            
-            // Hide success message after 5 seconds
-            setTimeout(() => {
-                successMessage.classList.remove('show');
-            }, 5000);
-        });
-    </script>
 </body>
 </html>
