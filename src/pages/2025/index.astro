@@ -23,6 +23,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <a href="/" class="back-link">&larr; Back</a>
     <div class="page-wrapper">
         <div class="hero-bg">
             <img src="/2025/assets/hh-2025-banner.jpg" alt="Hipster Holiday Banner">
@@ -65,13 +66,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="rsvp-section">
-                    <h2 class="section-title">RSVP</h2>
-                    <div class="google-form-container">
-                        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSePXus4A9gMB21tUeiLfkFvC9pC79k9pBbxnW1b2IG5tVf2hw/viewform?embedded=true">Loading…</iframe>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -79,6 +73,25 @@
 </html>
 
 <style>
+    .back-link {
+        position: fixed;
+        top: 24px;
+        left: 24px;
+        z-index: 100;
+        font-family: 'Figtree', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.5);
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .back-link:hover {
+        color: rgba(255, 255, 255, 0.9);
+    }
+
     * {
         margin: 0;
         padding: 0;
@@ -144,7 +157,7 @@
         flex-direction: column;
         align-items: center;
         gap: 48px;
-        padding: 0;
+        padding: 0 0 120px;
         margin-top: 670px;
         width: 100%;
     }
@@ -231,34 +244,7 @@
     .event-body p { margin: 0; color: rgba(255, 255, 255, 0.7) !important; }
     .event-content strong { font-weight: 700; }
 
-    .rsvp-section {
-        margin: 0;
-        max-width: 500px;
-        width: 100%;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
 
-    .google-form-container {
-        background: white;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-        margin-top: 24px;
-        width: 100%;
-        max-width: 500px;
-    }
-
-    .google-form-container iframe {
-        width: 100%;
-        height: 900px;
-        border: none;
-        display: block;
-        margin: 0;
-        padding: 0;
-    }
 
     @media (max-width: 1280px) {
         .hero-bg { width: 100%; max-width: 1280px; }
@@ -275,9 +261,6 @@
         .details-section { gap: 24px; width: 100%; }
         .event-card { width: 100%; max-width: 100%; padding: 32px; }
         .event-content { font-size: 16px; line-height: 19px; }
-        .rsvp-section { margin: 0; padding: 0; max-width: 100%; width: 100%; }
-        .google-form-container { margin-top: 24px; max-width: 100%; }
-        .google-form-container iframe { height: 1000px; }
     }
 
     @media (max-width: 480px) {
@@ -293,6 +276,5 @@
         .event-card { padding: 32px; width: 100%; max-width: 100%; }
         .event-content { font-size: 16px; line-height: 19px; }
         .event-content p { margin-bottom: 8px; }
-        .rsvp-section { max-width: 100%; }
     }
 </style>

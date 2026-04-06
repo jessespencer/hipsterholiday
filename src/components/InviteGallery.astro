@@ -20,6 +20,10 @@ const invites = [
     <div class="timeline">
         <nav class="timeline-nav" aria-label="Year navigation">
             <div class="timeline-track">
+                <a href="#countdown-hero" class="timeline-dot-link active" data-year="2026">
+                    <span class="dot"></span>
+                    <span class="dot-year">2026</span>
+                </a>
                 {invites.map((invite) => (
                     <a href={`#year-${invite.year}`} class="timeline-dot-link" data-year={invite.year}>
                         <span class="dot"></span>
@@ -54,23 +58,32 @@ const invites = [
 </section>
 
 <script>
+    const hero = document.getElementById('countdown-hero');
     const items = document.querySelectorAll('.timeline-item');
     const dotLinks = document.querySelectorAll('.timeline-dot-link');
 
     function updateActiveDot() {
         const scrollCenter = window.innerHeight * 0.45;
-        let activeYear = '';
+        let activeId = '';
+
+        if (hero) {
+            const rect = hero.getBoundingClientRect();
+            if (rect.top < scrollCenter && rect.bottom > scrollCenter - 100) {
+                activeId = 'countdown-hero';
+            }
+        }
 
         items.forEach((item) => {
             const rect = item.getBoundingClientRect();
             if (rect.top < scrollCenter && rect.bottom > scrollCenter - 100) {
-                activeYear = item.id;
+                activeId = item.id;
             }
         });
 
         dotLinks.forEach((link) => {
-            const isActive = `year-${link.getAttribute('data-year')}` === activeYear;
-            link.classList.toggle('active', isActive);
+            const year = link.getAttribute('data-year');
+            const linkId = year === '2026' ? 'countdown-hero' : `year-${year}`;
+            link.classList.toggle('active', linkId === activeId);
         });
     }
 
@@ -80,9 +93,11 @@ const invites = [
     dotLinks.forEach((link) => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            const target = document.getElementById(`year-${link.getAttribute('data-year')}`);
+            const year = link.getAttribute('data-year');
+            const targetId = year === '2026' ? 'countdown-hero' : `year-${year}`;
+            const target = document.getElementById(targetId);
             if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                target.scrollIntoView({ behavior: 'smooth', block: year === '2026' ? 'start' : 'center' });
             }
         });
     });
@@ -126,18 +141,16 @@ const invites = [
     }
 
     .timeline {
-        display: flex;
-        gap: 0;
+        position: relative;
     }
 
     .timeline-nav {
-        position: sticky;
+        position: fixed;
+        right: 24px;
         top: 50%;
         transform: translateY(-50%);
         height: fit-content;
-        flex-shrink: 0;
-        align-self: flex-start;
-        width: 80px;
+        z-index: 10;
     }
 
     .timeline-track {
@@ -149,12 +162,16 @@ const invites = [
     }
 
     .timeline-track::before {
+        display: none;
+    }
+
+    .timeline-dot-link:not(:last-child) .dot::after {
         content: '';
         position: absolute;
-        top: 16px;
-        bottom: 16px;
+        top: 100%;
         left: 50%;
         width: 1px;
+        height: 28px;
         background: rgba(255, 255, 255, 0.06);
         transform: translateX(-50%);
     }
@@ -171,6 +188,7 @@ const invites = [
     }
 
     .dot {
+        position: relative;
         display: block;
         width: 7px;
         height: 7px;
@@ -212,12 +230,11 @@ const invites = [
     }
 
     .timeline-content {
-        flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 80px;
-        min-width: 0;
-        padding-left: 32px;
+        gap: 120px;
+        max-width: 720px;
+        margin: 0 auto;
     }
 
     .timeline-item {
@@ -229,8 +246,10 @@ const invites = [
 
     .timeline-item-year {
         flex-shrink: 0;
-        width: 64px;
+        width: 0;
         padding-top: 20px;
+        margin-left: -48px;
+        margin-right: 16px;
     }
 
     .year-number {
@@ -316,6 +335,7 @@ const invites = [
         .timeline-nav {
             position: static;
             transform: none;
+            right: auto;
             width: 100%;
             margin-bottom: 32px;
             overflow-x: auto;
@@ -344,8 +364,8 @@ const invites = [
         }
 
         .timeline-content {
-            padding-left: 0;
-            gap: 48px;
+            max-width: none;
+            gap: 72px;
         }
 
         .timeline-item {
