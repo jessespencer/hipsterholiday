@@ -18,11 +18,16 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 
 - Fonts: Cormorant Garamond (display) + Outfit (body)
 - Colors: `#0a0806` bg, `#bf3a2b` accent red, `#d4a853` gold, `#ede4d4` text
-- Film grain overlay + warm radial glow for atmosphere
+- Warm radial glow for atmosphere (no film grain — it was removed)
 - Countdown targets the 2nd Friday of December at 6 PM MST dynamically
+- Gallery is centered on the page with a fixed floating timeline nav on the right
+- Year labels sit to the left of each card, pulled out of flow to keep cards centered
+- Timeline nav includes the upcoming year (linked to countdown hero) plus all archived years
+- Yearly event pages include a fixed "Back" link in the top left
 
 ## Yearly Workflow
 
 1. Create `src/pages/YYYY/index.astro` + `public/YYYY/assets/`
 2. Add invite image to `public/invites/` and update array in `InviteGallery.astro`
-3. After event, ensure countdown remains the root landing page
+3. Update the `data-year` value for the countdown dot in `InviteGallery.astro` to the new year
+4. After event, ensure countdown remains the root landing page
