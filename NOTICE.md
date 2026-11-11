@@ -26,7 +26,7 @@ are the exclusive property of Jesse Spencer and **may not be reused, copied, alt
 
 ## Usage
 
-If you'd like to reference or feature the Hipster Holiday brand, please [contact me](mailto:jessespencerw@gmail.com) to request permission.
+If you'd like to reference or feature the Hipster Holiday brand, please [open an issue](https://github.com/jessespencer/hipsterholiday/issues/new) to request permission.
 
 ---
 
