@@ -9,6 +9,18 @@
 const SHEET_NAME = 'RSVPs';
 const HEADERS = ['Submitted', 'Year', 'Attending', 'Name', 'Email', 'Guests', 'Note'];
 
+/**
+ * Run this once from the editor (pick "setup" in the toolbar, then Run).
+ * It creates the RSVPs tab with headers and triggers Google's permission
+ * prompt there, so deploying afterwards doesn't need to ask again.
+ */
+function setup() {
+  const book = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = book.getSheetByName(SHEET_NAME) || book.insertSheet(SHEET_NAME);
+  if (sheet.getLastRow() === 0) sheet.appendRow(HEADERS);
+  sheet.setFrozenRows(1);
+}
+
 function doPost(e) {
   const p = (e && e.parameter) || {};
 
