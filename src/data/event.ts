@@ -37,6 +37,11 @@ export const event = {
             value: 'Cookies, glühwein, and dangerously good food',
             note: 'Bring an appetite. The baby is not sharing.',
         },
+        {
+            label: 'Grown-ups only',
+            value: 'A night off for the parents',
+            note: 'Unless your tiny human is still powered by mama’s liquid gold, this is a night for the grown-ups to stay up past bedtime in peace.',
+        },
     ],
 } as const;
 
