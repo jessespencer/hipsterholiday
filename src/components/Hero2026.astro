@@ -166,11 +166,12 @@ import CountdownTimer from './CountdownTimer.astro';
             function advanceTour() {
                 if (userDriving || tourStep >= TOUR.length - 1) return;
                 tourStep++;
-                tourTimer = window.setTimeout(advanceTour, 1600);
+                tourTimer = window.setTimeout(advanceTour, 2400);
             }
             setLight(start.x, start.y);
-            window.setTimeout(() => hero!.classList.add('is-lit'), 500);
-            tourTimer = window.setTimeout(advanceTour, 1900);
+            // Give the opening line a moment to land before the light starts moving
+            window.setTimeout(() => hero!.classList.add('is-lit'), 1400);
+            tourTimer = window.setTimeout(advanceTour, 4000);
 
             function onPoint(e: PointerEvent) {
                 if (!introDone) {
@@ -213,7 +214,8 @@ import CountdownTimer from './CountdownTimer.astro';
                 // Ease toward the target at the same speed regardless of frame rate
                 const dt = last ? Math.min(now - last, 100) : 16.7;
                 last = now;
-                const ease = 1 - Math.pow(1 - 0.09, dt / 16.7);
+                // The tour glides slowly; once the visitor has the light it follows them briskly
+                const ease = 1 - Math.pow(1 - (userDriving ? 0.09 : 0.04), dt / 16.7);
 
                 // Tour stops are re-mapped each frame so a resize mid-tour stays on target.
                 // Right after waking, the light holds on the baby for a beat.
