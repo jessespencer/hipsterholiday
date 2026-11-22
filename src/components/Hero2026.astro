@@ -60,6 +60,7 @@ import CountdownTimer from './CountdownTimer.astro';
         { x: 1840, y: 930 },
     ];
     const BABY_HEAD = { x: 1311, y: 1229 };
+    const BED_CENTER = { x: 985, y: 1000 };
     const BABY_BODY = { x: 1000, y: 1270, rx: 520, ry: 290 };
     const FIND_RADIUS = 260;
     // Three stops: the kids, the parents, then the baby (each pair shares one pool of light)
@@ -103,6 +104,14 @@ import CountdownTimer from './CountdownTimer.astro';
             awake!.style.left = `${head.x}px`;
             awake!.style.top = `${head.y}px`;
             awake!.style.width = `${400 * scale}px`;
+
+            // Centre the verse and punchline on the middle of the bed, not on their column
+            const verse = hero!.querySelector<HTMLElement>('.poem');
+            if (verse) {
+                const bedX = scene!.getBoundingClientRect().left + toScene(BED_CENTER).x;
+                const col = verse.getBoundingClientRect();
+                hero!.style.setProperty('--cx', `${(bedX - col.left).toFixed(1)}px`);
+            }
         }
 
         const setLight = (x: number, y: number) => {
@@ -271,6 +280,7 @@ import CountdownTimer from './CountdownTimer.astro';
     .hero26 {
         --night: rgba(6, 4, 2, 0.9);
         --light-size: clamp(130px, 24vmin, 300px);
+        --bleed: clamp(80px, 14vw, 260px);
         --light-on: 0;
         --light-r: max(1px, calc(var(--light-size) * var(--light-on)));
         transition: --light-on 1.3s cubic-bezier(0.22, 1, 0.36, 1);
@@ -300,8 +310,10 @@ import CountdownTimer from './CountdownTimer.astro';
         grid-area: scene;
         position: relative;
         overflow: hidden;
-        -webkit-mask-image: linear-gradient(to right, transparent 0, #000 22%, #000 92%, transparent 100%);
-                mask-image: linear-gradient(to right, transparent 0, #000 22%, #000 92%, transparent 100%);
+        /* Reach under the title column so the room fades into it rather than stopping at a seam */
+        margin-left: calc(-1 * var(--bleed));
+        -webkit-mask-image: linear-gradient(to right, transparent 0, rgba(0, 0, 0, 0.25) 14%, rgba(0, 0, 0, 0.7) 28%, #000 40%, #000 93%, transparent 100%);
+                mask-image: linear-gradient(to right, transparent 0, rgba(0, 0, 0, 0.25) 14%, rgba(0, 0, 0, 0.7) 28%, #000 40%, #000 93%, transparent 100%);
         --lx: 50%;
         --ly: 20%;
         --bx: 50%;
@@ -520,8 +532,7 @@ import CountdownTimer from './CountdownTimer.astro';
         letter-spacing: 0.005em;
     }
 
-    /* The story reads down the scene: setup across the top, payoff under the baby.
-       The left padding matches the scene's faded edge so the lines centre on the photo. */
+    /* The story reads down the scene: setup across the top, payoff under the baby */
     .poem,
     .punch {
         grid-area: scene;
@@ -529,8 +540,9 @@ import CountdownTimer from './CountdownTimer.astro';
         z-index: 2;
         justify-self: stretch;
         margin: 0;
-        padding-left: 16%;
-        padding-right: 4%;
+        /* --cx (set by the script) is the bed's centre within this column */
+        padding-left: max(0px, calc(2 * var(--cx, 50%) - 100%));
+        padding-right: max(0px, calc(100% - 2 * var(--cx, 50%)));
         text-align: center;
         pointer-events: none;
         text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
@@ -556,6 +568,8 @@ import CountdownTimer from './CountdownTimer.astro';
 
     .details {
         grid-area: details;
+        position: relative;
+        z-index: 3;
     }
 
     .punch {
@@ -684,6 +698,7 @@ import CountdownTimer from './CountdownTimer.astro';
         }
 
         .scene {
+            margin-left: 0;
             width: 100%;
             max-width: 640px;
             aspect-ratio: 1 / 1;
