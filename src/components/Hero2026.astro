@@ -165,8 +165,18 @@ import CountdownTimer from './CountdownTimer.astro';
                 target.x = e.clientX - r.left;
                 target.y = e.clientY - r.top;
                 if (!userDriving) {
+                    // Handoff: the baby keeps her spotlight exactly as it is (her own layer
+                    // matches the stretched light), and a fresh light switches on at the cursor.
                     userDriving = true;
+                    morph = 0;
+                    cur.x = target.x;
+                    cur.y = target.y;
+                    hero!.style.transition = 'none';
+                    hero!.classList.remove('is-lit');
                     hero!.classList.add('is-driving');
+                    void hero!.offsetWidth;
+                    hero!.style.transition = '';
+                    requestAnimationFrame(() => hero!.classList.add('is-lit'));
                 }
             }
             hero.addEventListener('pointermove', onPoint);
@@ -300,12 +310,18 @@ import CountdownTimer from './CountdownTimer.astro';
         --bry: 110px;
         --baby-on: 0;
         --m: 0;
-        transition: --baby-on 0.6s ease;
+        /* No fade: her layer is identical to the light it replaces, so the swap is invisible */
+        transition: none;
     }
 
     /* Her own spotlight only takes over once the visitor moves the light away */
     .is-driving .scene {
         --baby-on: 1;
+    }
+
+    /* The cursor's light switches on quicker than the opening one */
+    .is-driving {
+        transition-duration: 0.45s;
     }
 
     .is-lit {
@@ -337,19 +353,20 @@ import CountdownTimer from './CountdownTimer.astro';
         pointer-events: none;
         background:
             radial-gradient(ellipse var(--lrx) var(--lry) at var(--lx) var(--ly), rgba(255, 196, 120, 0.22), transparent 70%),
+            radial-gradient(ellipse var(--brx) var(--bry) at var(--bx) var(--by), rgba(255, 196, 120, calc(0.22 * var(--baby-on))), transparent 70%),
             var(--night);
         -webkit-mask-image:
             radial-gradient(ellipse var(--lrx) var(--lry) at var(--lx) var(--ly), rgba(0, 0, 0, 0.05) 0, rgba(0, 0, 0, 0.3) 45%, #000 100%),
             radial-gradient(ellipse var(--brx) var(--bry) at var(--bx) var(--by),
                 rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.95)) 0,
-                rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.8)) 55%,
+                rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.7)) 45%,
                 #000 100%);
         -webkit-mask-composite: source-in;
                 mask-image:
             radial-gradient(ellipse var(--lrx) var(--lry) at var(--lx) var(--ly), rgba(0, 0, 0, 0.05) 0, rgba(0, 0, 0, 0.3) 45%, #000 100%),
             radial-gradient(ellipse var(--brx) var(--bry) at var(--bx) var(--by),
                 rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.95)) 0,
-                rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.8)) 55%,
+                rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.7)) 45%,
                 #000 100%);
                 mask-composite: intersect;
     }
