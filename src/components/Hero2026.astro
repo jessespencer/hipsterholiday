@@ -61,8 +61,14 @@ import CountdownTimer from './CountdownTimer.astro';
     const BABY_HEAD = { x: 1311, y: 1229 };
     const BABY_BODY = { x: 1000, y: 1270, rx: 520, ry: 290 };
     const FIND_RADIUS = 260;
-    // The light switches on over the first sleeper, visits the others, then finds the baby
-const TOUR = [...SLEEPERS, { x: 1500, y: 1250 }, BABY_HEAD];
+    // The light switches on over the first face, visits each sleeper's face, then finds the baby
+    const FACES = [
+        { x: 1014, y: 540 },
+        { x: 1211, y: 662 },
+        { x: 1552, y: 859 },
+        { x: 1739, y: 1014 },
+    ];
+    const TOUR = [...FACES, BABY_HEAD];
 
     const hero = document.querySelector<HTMLElement>('[data-hero26]');
     const scene = document.querySelector<HTMLElement>('[data-scene]');
@@ -145,7 +151,7 @@ const TOUR = [...SLEEPERS, { x: 1500, y: 1250 }, BABY_HEAD];
             function advanceTour() {
                 if (userDriving || tourStep >= TOUR.length - 1) return;
                 tourStep++;
-                tourTimer = window.setTimeout(advanceTour, tourStep === TOUR.length - 2 ? 700 : 950);
+                tourTimer = window.setTimeout(advanceTour, 1300);
             }
             setLight(start.x, start.y);
             window.setTimeout(() => hero!.classList.add('is-lit'), 500);
