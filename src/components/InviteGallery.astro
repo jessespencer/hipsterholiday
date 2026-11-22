@@ -1,9 +1,8 @@
 ---
-// The upcoming year shares one nav dot with the countdown hero
+// The upcoming year's dot links to the countdown hero, which shows its invite
 const upcomingYear = 2026;
 
 const invites = [
-    { year: 2026 },
     { year: 2025, link: '/2025/' },
     { year: 2024 },
     { year: 2023 },
@@ -28,7 +27,7 @@ const invites = [
                     <span class="dot"></span>
                     <span class="dot-year">{upcomingYear}</span>
                 </a>
-                {invites.filter((invite) => invite.year !== upcomingYear).map((invite) => (
+                {invites.map((invite) => (
                     <a href={`#year-${invite.year}`} class="timeline-dot-link" data-year={invite.year}>
                         <span class="dot"></span>
                         <span class="dot-year">{invite.year}</span>
@@ -87,7 +86,7 @@ const invites = [
         dotLinks.forEach((link) => {
             const year = link.getAttribute('data-year');
             const isActive = link.hasAttribute('data-upcoming')
-                ? activeId === 'countdown-hero' || activeId === `year-${year}`
+                ? activeId === 'countdown-hero'
                 : activeId === `year-${year}`;
             link.classList.toggle('active', isActive);
         });

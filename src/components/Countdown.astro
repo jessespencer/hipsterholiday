@@ -1,7 +1,20 @@
 ---
+interface Props {
+    /** Invite image for the upcoming party, shown beside the countdown */
+    invite?: string;
+}
+
+const { invite } = Astro.props;
 ---
 <div class="countdown-hero" id="countdown-hero">
     <div class="hero-border-top"></div>
+
+    <div class:list={['hero-layout', { 'has-invite': invite }]}>
+    {invite && (
+        <div class="hero-invite">
+            <img src={invite} alt="Hipster Holiday invitation" />
+        </div>
+    )}
 
     <div class="countdown-inner">
         <h1 class="brand-title">
@@ -40,6 +53,7 @@
         </div>
 
         <p class="target-date" id="target-date"></p>
+    </div>
     </div>
 
     <div class="scroll-cue">
@@ -121,6 +135,68 @@
         right: 10%;
         height: 1px;
         background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    }
+
+    .hero-layout {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .hero-layout.has-invite {
+        max-width: 1240px;
+        align-items: center;
+        gap: 56px;
+        /* extra right padding keeps clear of the fixed timeline nav */
+        padding: 96px 140px 96px 64px;
+    }
+
+    .hero-invite {
+        flex: 0 1 520px;
+        min-width: 0;
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--bg-card);
+        box-shadow: 0 12px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-invite img {
+        width: 100%;
+        display: block;
+    }
+
+    .has-invite .countdown-inner {
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 0;
+    }
+
+    .has-invite .title-top,
+    .has-invite .title-bottom {
+        font-size: clamp(64px, 8vw, 124px);
+    }
+
+    .has-invite .time-block {
+        min-width: 84px;
+        padding: 14px 14px;
+    }
+
+    .has-invite .time-value {
+        font-size: 56px;
+    }
+
+    @media (max-width: 1100px) {
+        .hero-layout.has-invite {
+            flex-direction: column;
+            gap: 48px;
+            padding: 72px 32px 112px;
+        }
+
+        .hero-invite {
+            flex: none;
+            width: 100%;
+            max-width: 520px;
+        }
     }
 
     .countdown-inner {
@@ -263,6 +339,20 @@
     @media (max-width: 600px) {
         .countdown-inner {
             padding: 32px 20px;
+        }
+
+        .hero-layout.has-invite {
+            padding: 48px 16px 104px;
+            gap: 32px;
+        }
+
+        .has-invite .time-block {
+            min-width: 68px;
+            padding: 12px 10px;
+        }
+
+        .has-invite .time-value {
+            font-size: 44px;
         }
 
         .overline {
