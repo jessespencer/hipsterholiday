@@ -166,12 +166,13 @@ import CountdownTimer from './CountdownTimer.astro';
             function advanceTour() {
                 if (userDriving || tourStep >= TOUR.length - 1) return;
                 tourStep++;
-                tourTimer = window.setTimeout(advanceTour, 2400);
+                tourTimer = window.setTimeout(advanceTour, 1800);
             }
             setLight(start.x, start.y);
-            // Give the opening line a moment to land before the light starts moving
-            window.setTimeout(() => hero!.classList.add('is-lit'), 1400);
-            tourTimer = window.setTimeout(advanceTour, 4000);
+            // The first line plays alone; the light comes on with "not a creature was stirring…"
+            // (keep in step with the second line's animation-delay in the styles)
+            window.setTimeout(() => hero!.classList.add('is-lit'), 1600);
+            tourTimer = window.setTimeout(advanceTour, 3200);
 
             function onPoint(e: PointerEvent) {
                 if (!introDone) {
@@ -215,7 +216,7 @@ import CountdownTimer from './CountdownTimer.astro';
                 const dt = last ? Math.min(now - last, 100) : 16.7;
                 last = now;
                 // The tour glides slowly; once the visitor has the light it follows them briskly
-                const ease = 1 - Math.pow(1 - (userDriving ? 0.09 : 0.04), dt / 16.7);
+                const ease = 1 - Math.pow(1 - (userDriving ? 0.09 : 0.055), dt / 16.7);
 
                 // Tour stops are re-mapped each frame so a resize mid-tour stays on target.
                 // Right after waking, the light holds on the baby for a beat.
@@ -551,8 +552,9 @@ import CountdownTimer from './CountdownTimer.astro';
         animation: fade-up 1s ease forwards;
     }
 
+    /* The second line arrives with the nightlight (see the tour timing in the script) */
     .poem span:nth-child(2) {
-        animation-delay: 0.7s;
+        animation-delay: 1.6s;
     }
 
     .details {
