@@ -33,7 +33,7 @@ import CountdownTimer from './CountdownTimer.astro';
                 <path d="M 120 -94 L 154 -122" />
             </g>
         </svg>
-        <p class="hint" data-hint>Move the light. Who’s still awake?</p>
+        <p class="hint" data-hint>Move the light around</p>
     </div>
 
     <div class="details">
@@ -61,14 +61,12 @@ import CountdownTimer from './CountdownTimer.astro';
     const BABY_HEAD = { x: 1311, y: 1229 };
     const BABY_BODY = { x: 1000, y: 1270, rx: 520, ry: 290 };
     const FIND_RADIUS = 260;
-    // The light switches on over the first face, visits each sleeper's face, then finds the baby
-    const FACES = [
-        { x: 1014, y: 540 },
-        { x: 1211, y: 662 },
-        { x: 1552, y: 859 },
-        { x: 1739, y: 1014 },
+    // Three stops: the kids, the parents, then the baby (each pair shares one pool of light)
+    const TOUR = [
+        { x: 1120, y: 600 },
+        { x: 1650, y: 935 },
+        BABY_HEAD,
     ];
-    const TOUR = [...FACES, BABY_HEAD];
 
     const hero = document.querySelector<HTMLElement>('[data-hero26]');
     const scene = document.querySelector<HTMLElement>('[data-scene]');
@@ -80,7 +78,7 @@ import CountdownTimer from './CountdownTimer.astro';
     if (hero && scene && img && fx && awake) {
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (hint && window.matchMedia('(hover: none)').matches) {
-            hint.textContent = 'Drag the light. Who’s still awake?';
+            hint.textContent = 'Drag the light around';
         }
 
         // Map photo coordinates to scene pixels, honouring object-fit: cover + object-position
@@ -144,6 +142,8 @@ import CountdownTimer from './CountdownTimer.astro';
             const start = toScene(TOUR[0]);
             const cur = { ...start };
             const target = { ...start };
+            // The intro tour always plays to the baby; only then does the pointer take over
+            let introDone = false;
             let userDriving = false;
             let tourStep = 0;
             let tourTimer = 0;
@@ -151,19 +151,20 @@ import CountdownTimer from './CountdownTimer.astro';
             function advanceTour() {
                 if (userDriving || tourStep >= TOUR.length - 1) return;
                 tourStep++;
-                tourTimer = window.setTimeout(advanceTour, 1300);
+                tourTimer = window.setTimeout(advanceTour, 1600);
             }
             setLight(start.x, start.y);
             window.setTimeout(() => hero!.classList.add('is-lit'), 500);
             tourTimer = window.setTimeout(advanceTour, 1900);
 
             function onPoint(e: PointerEvent) {
+                if (!introDone) return;
                 const r = scene!.getBoundingClientRect();
                 target.x = e.clientX - r.left;
                 target.y = e.clientY - r.top;
                 if (!userDriving) {
                     userDriving = true;
-                    window.clearTimeout(tourTimer);
+                    hero!.classList.add('is-driving');
                 }
             }
             hero.addEventListener('pointermove', onPoint);
@@ -171,7 +172,13 @@ import CountdownTimer from './CountdownTimer.astro';
 
             let visible = true;
             let raf = 0;
+            let last = 0;
             function frame(now: number) {
+                // Ease toward the target at the same speed regardless of frame rate
+                const dt = last ? Math.min(now - last, 100) : 16.7;
+                last = now;
+                const ease = 1 - Math.pow(1 - 0.09, dt / 16.7);
+
                 // Tour stops are re-mapped each frame so a resize mid-tour stays on target.
                 // Right after waking, the light holds on the baby for a beat.
                 const head = toScene(BABY_HEAD);
@@ -183,8 +190,12 @@ import CountdownTimer from './CountdownTimer.astro';
                     target.x = p.x;
                     target.y = p.y;
                 }
-                cur.x += (target.x - cur.x) * 0.09;
-                cur.y += (target.y - cur.y) * 0.09;
+                if (found && !introDone && now >= lockUntil) {
+                    introDone = true;
+                    hero!.classList.add('is-ready');
+                }
+                cur.x += (target.x - cur.x) * ease;
+                cur.y += (target.y - cur.y) * ease;
                 setLight(cur.x, cur.y);
 
                 if (Math.hypot(cur.x - head.x, cur.y - head.y) < Math.max(FIND_RADIUS * map.scale, 60)) wake();
@@ -211,6 +222,7 @@ import CountdownTimer from './CountdownTimer.astro';
                 cancelAnimationFrame(raf);
                 window.clearInterval(fxTimer);
                 if (visible) {
+                    last = 0;
                     raf = requestAnimationFrame(frame);
                     fxTimer = window.setInterval(puff, 650);
                 }
@@ -236,7 +248,7 @@ import CountdownTimer from './CountdownTimer.astro';
     }
 
     .hero26 {
-        --night: rgba(8, 5, 3, 0.8);
+        --night: rgba(6, 4, 2, 0.9);
         --light-size: clamp(130px, 24vmin, 300px);
         --light-on: 0;
         --light-r: max(1px, calc(var(--light-size) * var(--light-on)));
@@ -308,14 +320,14 @@ import CountdownTimer from './CountdownTimer.astro';
             radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(255, 196, 120, 0.22), transparent 70%),
             var(--night);
         -webkit-mask-image:
-            radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(0, 0, 0, 0.15) 0, rgba(0, 0, 0, 0.35) 45%, #000 100%),
+            radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(0, 0, 0, 0.05) 0, rgba(0, 0, 0, 0.3) 45%, #000 100%),
             radial-gradient(ellipse var(--brx) var(--bry) at var(--bx) var(--by),
                 rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.95)) 0,
                 rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.8)) 55%,
                 #000 100%);
         -webkit-mask-composite: source-in;
                 mask-image:
-            radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(0, 0, 0, 0.15) 0, rgba(0, 0, 0, 0.35) 45%, #000 100%),
+            radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(0, 0, 0, 0.05) 0, rgba(0, 0, 0, 0.3) 45%, #000 100%),
             radial-gradient(ellipse var(--brx) var(--bry) at var(--bx) var(--by),
                 rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.95)) 0,
                 rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.8)) 55%,
@@ -443,13 +455,13 @@ import CountdownTimer from './CountdownTimer.astro';
         color: var(--text-mid);
         white-space: nowrap;
         opacity: 0;
-        animation: fade-in 0.8s ease 2.6s forwards;
+        transition: opacity 0.6s ease;
     }
 
-    .is-found .hint {
-        animation: none;
-        opacity: 0;
-        transition: opacity 0.6s ease;
+    /* Offered once the intro has landed on the baby, gone as soon as they take the light */
+    .is-ready:not(.is-driving) .hint {
+        opacity: 1;
+        transition-delay: 0.8s;
     }
 
     /* ---------- the words: one voice ----------
