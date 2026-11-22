@@ -29,5 +29,5 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 
 1. Create `src/pages/YYYY/index.astro` + `public/YYYY/assets/`
 2. Add invite image to `public/invites/` and update array in `InviteGallery.astro`
-3. Update the `data-year` value for the countdown dot in `InviteGallery.astro` to the new year
+3. Set `upcomingYear` in `InviteGallery.astro` to the new year (its invite shares one nav dot with the countdown)
 4. After event, ensure countdown remains the root landing page
