@@ -1,0 +1,61 @@
+---
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+    <p class="line">
+        <span>Hipster Holiday · since 2016</span>
+        <span class="sep" aria-hidden="true">·</span>
+        <span>Built by <a href="https://jessespencer.dev" target="_blank" rel="noopener noreferrer">jessespencer.dev</a></span>
+    </p>
+    <p class="fine">© {year} The Spencers</p>
+</footer>
+
+<style>
+    .site-footer {
+        position: relative;
+        z-index: 1;
+        margin-top: 40px;
+        padding: 40px 20px 48px;
+        border-top: 1px solid rgba(212, 168, 83, 0.12);
+        text-align: center;
+        font-family: var(--font-body);
+        font-size: 12px;
+        letter-spacing: 0.5px;
+        color: var(--text-dim);
+    }
+
+    .line {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px 10px;
+        margin-bottom: 8px;
+    }
+
+    a {
+        color: var(--text-mid);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-color: rgba(212, 168, 83, 0.4);
+        transition: color 0.2s ease;
+    }
+
+    a:hover,
+    a:focus-visible {
+        color: var(--gold);
+    }
+
+    .fine {
+        font-size: 11px;
+    }
+
+    @media (max-width: 420px) {
+        .sep {
+            display: none;
+        }
+
+        .line {
+            flex-direction: column;
+        }
+    }
+</style>

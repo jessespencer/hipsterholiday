@@ -49,6 +49,7 @@ const { title, description = 'The countdown is on. The 2nd Friday of December. E
         --font-display: 'Cormorant Garamond', 'Georgia', serif;
         --font-body: 'Outfit', -apple-system, sans-serif;
         --font-theme: 'Fraunces', 'Georgia', serif;
+        --nav-h: 64px;
     }
 
     * {
@@ -59,6 +60,11 @@ const { title, description = 'The countdown is on. The 2nd Friday of December. E
 
     html {
         scroll-behavior: smooth;
+    }
+
+    /* Keep anchored sections clear of the fixed top nav */
+    [id] {
+        scroll-margin-top: var(--nav-h);
     }
 
     body {

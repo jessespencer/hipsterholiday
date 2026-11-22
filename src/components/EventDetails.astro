@@ -1,0 +1,151 @@
+---
+import { event } from '../data/event';
+---
+<section class="details-section" id="details">
+    <div class="intro">
+        <p class="eyebrow">The {event.year} details</p>
+        <h2 class="heading">Pajamas on, cookies out</h2>
+        <p class="lede">
+            Everyone’s in pajamas, nobody’s stirring (well, almost nobody), and the
+            cookies won’t eat themselves.
+        </p>
+        <a href="#rsvp" class="cta">RSVP</a>
+    </div>
+
+    <dl class="list">
+        {event.details.map((item) => (
+            <div class="row">
+                <dt class="label">{item.label}</dt>
+                <dd class="value">
+                    {item.value}
+                    {item.note && <span class="note">{item.note}</span>}
+                </dd>
+            </div>
+        ))}
+    </dl>
+</section>
+
+<style>
+    .details-section {
+        position: relative;
+        z-index: 1;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: clamp(96px, 14vh, 160px) 32px clamp(64px, 10vh, 120px);
+        display: grid;
+        grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+        gap: clamp(40px, 6vw, 96px);
+        align-items: start;
+    }
+
+    .eyebrow {
+        font-family: var(--font-body);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 18px;
+    }
+
+    .heading {
+        font-family: var(--font-theme);
+        font-weight: 800;
+        font-variation-settings: 'SOFT' 100, 'opsz' 96;
+        font-size: clamp(34px, 3.6vw, 52px);
+        line-height: 1.02;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        margin-bottom: 20px;
+    }
+
+    .lede {
+        font-family: var(--font-theme);
+        font-style: italic;
+        font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 48;
+        font-size: clamp(17px, 1.4vw, 20px);
+        line-height: 1.5;
+        color: var(--text-mid);
+        margin-bottom: 32px;
+        max-width: 34ch;
+    }
+
+    .cta {
+        display: inline-block;
+        padding: 13px 28px;
+        border-radius: 100px;
+        background: var(--gold);
+        color: #1a120b;
+        font-family: var(--font-body);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: background 0.25s ease;
+    }
+
+    .cta:hover,
+    .cta:focus-visible {
+        background: #e2bb6c;
+    }
+
+    .list {
+        border-top: 1px solid rgba(212, 168, 83, 0.18);
+    }
+
+    .row {
+        display: grid;
+        grid-template-columns: 150px minmax(0, 1fr);
+        gap: 24px;
+        padding: 26px 0;
+        border-bottom: 1px solid rgba(212, 168, 83, 0.18);
+    }
+
+    .label {
+        padding-top: 6px;
+        font-family: var(--font-body);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--gold);
+    }
+
+    .value {
+        font-family: var(--font-theme);
+        font-weight: 600;
+        font-variation-settings: 'SOFT' 100, 'opsz' 48;
+        font-size: clamp(20px, 1.8vw, 26px);
+        line-height: 1.25;
+        color: var(--text-primary);
+    }
+
+    .note {
+        display: block;
+        margin-top: 6px;
+        font-family: var(--font-body);
+        font-weight: 300;
+        font-size: 15px;
+        line-height: 1.5;
+        color: var(--text-mid);
+    }
+
+    @media (max-width: 860px) {
+        .details-section {
+            grid-template-columns: 1fr;
+            padding: 80px 20px 56px;
+            gap: 40px;
+        }
+
+        .row {
+            grid-template-columns: 1fr;
+            gap: 8px;
+            padding: 22px 0;
+        }
+
+        .label {
+            padding-top: 0;
+        }
+    }
+</style>

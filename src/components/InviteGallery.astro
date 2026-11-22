@@ -1,7 +1,4 @@
 ---
-// The upcoming year's dot links to the countdown hero, which shows its invite
-const upcomingYear = 2026;
-
 const invites = [
     { year: 2025, link: '/2025/' },
     { year: 2024 },
@@ -13,7 +10,7 @@ const invites = [
     { year: 2016 },
 ];
 ---
-<section class="gallery-section">
+<section class="gallery-section" id="archive">
     <div class="gallery-header">
         <span class="gallery-rule"></span>
         <h2 class="section-title">The Archive</h2>
@@ -21,12 +18,8 @@ const invites = [
     </div>
 
     <div class="timeline">
-        <nav class="timeline-nav" aria-label="Year navigation">
+        <nav class="timeline-nav" aria-label="Year navigation" data-timeline-nav>
             <div class="timeline-track">
-                <a href="#countdown-hero" class="timeline-dot-link active" data-year={upcomingYear} data-upcoming>
-                    <span class="dot"></span>
-                    <span class="dot-year">{upcomingYear}</span>
-                </a>
                 {invites.map((invite) => (
                     <a href={`#year-${invite.year}`} class="timeline-dot-link" data-year={invite.year}>
                         <span class="dot"></span>
@@ -61,20 +54,14 @@ const invites = [
 </section>
 
 <script>
-    const hero = document.getElementById('countdown-hero');
-    const items = document.querySelectorAll('.timeline-item');
-    const dotLinks = document.querySelectorAll('.timeline-dot-link');
+    const section = document.getElementById('archive');
+    const timelineNav = document.querySelector<HTMLElement>('[data-timeline-nav]');
+    const items = document.querySelectorAll<HTMLElement>('.timeline-item');
+    const dotLinks = document.querySelectorAll<HTMLAnchorElement>('.timeline-dot-link');
 
     function updateActiveDot() {
         const scrollCenter = window.innerHeight * 0.45;
         let activeId = '';
-
-        if (hero) {
-            const rect = hero.getBoundingClientRect();
-            if (rect.top < scrollCenter && rect.bottom > scrollCenter - 100) {
-                activeId = 'countdown-hero';
-            }
-        }
 
         items.forEach((item) => {
             const rect = item.getBoundingClientRect();
@@ -84,26 +71,24 @@ const invites = [
         });
 
         dotLinks.forEach((link) => {
-            const year = link.getAttribute('data-year');
-            const isActive = link.hasAttribute('data-upcoming')
-                ? activeId === 'countdown-hero'
-                : activeId === `year-${year}`;
-            link.classList.toggle('active', isActive);
+            link.classList.toggle('active', activeId === `year-${link.dataset.year}`);
         });
     }
 
     window.addEventListener('scroll', updateActiveDot, { passive: true });
     updateActiveDot();
 
+    // The floating year nav only shows while you're in the archive
+    if (section && timelineNav) {
+        new IntersectionObserver(([entry]) => {
+            timelineNav.classList.toggle('is-visible', entry.isIntersecting);
+        }, { rootMargin: '-35% 0px -35% 0px' }).observe(section);
+    }
+
     dotLinks.forEach((link) => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            const year = link.getAttribute('data-year');
-            const isUpcoming = link.hasAttribute('data-upcoming');
-            const target = document.getElementById(isUpcoming ? 'countdown-hero' : `year-${year}`);
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: isUpcoming ? 'start' : 'center' });
-            }
+            document.getElementById(`year-${link.dataset.year}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
     });
 </script>
@@ -156,6 +141,14 @@ const invites = [
         transform: translateY(-50%);
         height: fit-content;
         z-index: 10;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease;
+    }
+
+    .timeline-nav.is-visible {
+        opacity: 1;
+        pointer-events: auto;
     }
 
     .timeline-track {
@@ -338,6 +331,8 @@ const invites = [
         }
 
         .timeline-nav {
+            opacity: 1;
+            pointer-events: auto;
             position: static;
             transform: none;
             right: auto;

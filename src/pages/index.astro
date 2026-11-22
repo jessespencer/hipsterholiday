@@ -1,9 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
+import TopNav from '../components/TopNav.astro';
 import Hero2026 from '../components/Hero2026.astro';
+import EventDetails from '../components/EventDetails.astro';
+import RsvpForm from '../components/RsvpForm.astro';
 import InviteGallery from '../components/InviteGallery.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 ---
 <Base title="Hipster Holiday">
-    <Hero2026 />
-    <InviteGallery />
+    <TopNav />
+    <main>
+        <Hero2026 />
+        <EventDetails />
+        <RsvpForm />
+        <InviteGallery />
+    </main>
+    <SiteFooter />
 </Base>
