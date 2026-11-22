@@ -1,20 +1,8 @@
 ---
-interface Props {
-    /** Invite image for the upcoming party, shown beside the countdown */
-    invite?: string;
-}
-
-const { invite } = Astro.props;
+import CountdownTimer from './CountdownTimer.astro';
 ---
 <div class="countdown-hero" id="countdown-hero">
     <div class="hero-border-top"></div>
-
-    <div class:list={['hero-layout', { 'has-invite': invite }]}>
-    {invite && (
-        <div class="hero-invite">
-            <img src={invite} alt="Hipster Holiday invitation" />
-        </div>
-    )}
 
     <div class="countdown-inner">
         <h1 class="brand-title">
@@ -30,93 +18,13 @@ const { invite } = Astro.props;
             <span class="orn-line"></span>
         </div>
 
-        <div class="countdown" id="countdown">
-            <div class="time-block">
-                <span class="time-value" id="days">--</span>
-                <span class="time-label">Days</span>
-            </div>
-            <span class="time-dot">&middot;</span>
-            <div class="time-block">
-                <span class="time-value" id="hours">--</span>
-                <span class="time-label">Hours</span>
-            </div>
-            <span class="time-dot">&middot;</span>
-            <div class="time-block">
-                <span class="time-value" id="minutes">--</span>
-                <span class="time-label">Min</span>
-            </div>
-            <span class="time-dot">&middot;</span>
-            <div class="time-block">
-                <span class="time-value" id="seconds">--</span>
-                <span class="time-label">Sec</span>
-            </div>
-        </div>
-
-        <p class="target-date" id="target-date"></p>
-    </div>
+        <CountdownTimer />
     </div>
 
     <div class="scroll-cue">
         <div class="scroll-line"></div>
     </div>
 </div>
-
-<script>
-    function getSecondFridayOfDecember(year: number): number {
-        const dec1 = new Date(year, 11, 1);
-        const dayOfWeek = dec1.getDay();
-        const firstFriday = 1 + ((5 - dayOfWeek + 7) % 7);
-        return firstFriday + 7;
-    }
-
-    function getNextEventDate() {
-        const now = new Date();
-        let year = now.getFullYear();
-        let day = getSecondFridayOfDecember(year);
-        let eventDate = new Date(Date.UTC(year, 11, day + 1, 1, 0, 0));
-
-        if (now >= eventDate) {
-            year++;
-            day = getSecondFridayOfDecember(year);
-            eventDate = new Date(Date.UTC(year, 11, day + 1, 1, 0, 0));
-        }
-
-        return { eventDate, year, day };
-    }
-
-    function pad(n: number): string {
-        return n < 10 ? '0' + n : String(n);
-    }
-
-    function updateCountdown() {
-        const { eventDate, year, day } = getNextEventDate();
-        const now = new Date();
-        const diff = eventDate.getTime() - now.getTime();
-
-        if (diff <= 0) {
-            document.getElementById('days')!.textContent = '00';
-            document.getElementById('hours')!.textContent = '00';
-            document.getElementById('minutes')!.textContent = '00';
-            document.getElementById('seconds')!.textContent = '00';
-            return;
-        }
-
-        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((diff % (1000 * 60)) / 1000);
-
-        document.getElementById('days')!.textContent = pad(d);
-        document.getElementById('hours')!.textContent = pad(h);
-        document.getElementById('minutes')!.textContent = pad(m);
-        document.getElementById('seconds')!.textContent = pad(s);
-        document.getElementById('target-date')!.textContent =
-            'December ' + day + ', ' + year + '  \u2022  6 PM MST';
-    }
-
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-</script>
 
 <style>
     .countdown-hero {
@@ -135,68 +43,6 @@ const { invite } = Astro.props;
         right: 10%;
         height: 1px;
         background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
-    }
-
-    .hero-layout {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-
-    .hero-layout.has-invite {
-        max-width: 1240px;
-        align-items: center;
-        gap: 56px;
-        /* extra right padding keeps clear of the fixed timeline nav */
-        padding: 96px 140px 96px 64px;
-    }
-
-    .hero-invite {
-        flex: 0 1 520px;
-        min-width: 0;
-        border-radius: 12px;
-        overflow: hidden;
-        background: var(--bg-card);
-        box-shadow: 0 12px 60px rgba(0, 0, 0, 0.5);
-    }
-
-    .hero-invite img {
-        width: 100%;
-        display: block;
-    }
-
-    .has-invite .countdown-inner {
-        flex: 1 1 0;
-        min-width: 0;
-        padding: 0;
-    }
-
-    .has-invite .title-top,
-    .has-invite .title-bottom {
-        font-size: clamp(64px, 8vw, 124px);
-    }
-
-    .has-invite .time-block {
-        min-width: 84px;
-        padding: 14px 14px;
-    }
-
-    .has-invite .time-value {
-        font-size: 56px;
-    }
-
-    @media (max-width: 1100px) {
-        .hero-layout.has-invite {
-            flex-direction: column;
-            gap: 48px;
-            padding: 72px 32px 112px;
-        }
-
-        .hero-invite {
-            flex: none;
-            width: 100%;
-            max-width: 520px;
-        }
     }
 
     .countdown-inner {
@@ -261,61 +107,6 @@ const { invite } = Astro.props;
         flex-shrink: 0;
     }
 
-    .countdown {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 36px;
-    }
-
-    .time-block {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 16px 20px;
-        min-width: 100px;
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.04);
-        border-radius: 8px;
-    }
-
-    .time-value {
-        font-family: var(--font-display);
-        font-weight: 300;
-        font-size: 72px;
-        line-height: 1;
-        letter-spacing: 0.02em;
-        color: var(--text-primary);
-        font-variant-numeric: tabular-nums;
-    }
-
-    .time-label {
-        font-family: var(--font-body);
-        font-weight: 400;
-        font-size: 10px;
-        letter-spacing: 4px;
-        text-transform: uppercase;
-        color: var(--text-dim);
-        margin-top: 8px;
-    }
-
-    .time-dot {
-        font-size: 32px;
-        color: var(--gold-dim);
-        padding-bottom: 20px;
-    }
-
-    .target-date {
-        font-family: var(--font-body);
-        font-weight: 300;
-        font-size: 13px;
-        letter-spacing: 4px;
-        text-transform: uppercase;
-        color: var(--gold);
-        opacity: 0.65;
-    }
-
     .scroll-cue {
         position: absolute;
         bottom: 48px;
@@ -341,48 +132,10 @@ const { invite } = Astro.props;
             padding: 32px 20px;
         }
 
-        .hero-layout.has-invite {
-            padding: 48px 16px 104px;
-            gap: 32px;
-        }
-
-        .has-invite .time-block {
-            min-width: 68px;
-            padding: 12px 10px;
-        }
-
-        .has-invite .time-value {
-            font-size: 44px;
-        }
-
         .overline {
             font-size: 10px;
             letter-spacing: 4px;
             margin-bottom: 28px;
-        }
-
-        .time-block {
-            min-width: 68px;
-            padding: 12px 10px;
-        }
-
-        .time-value {
-            font-size: 44px;
-        }
-
-        .time-dot {
-            font-size: 24px;
-            padding-bottom: 14px;
-        }
-
-        .time-label {
-            font-size: 9px;
-            letter-spacing: 3px;
-        }
-
-        .target-date {
-            font-size: 10px;
-            letter-spacing: 3px;
         }
 
         .orn-line {

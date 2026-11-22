@@ -8,7 +8,7 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 
 - `src/pages/index.astro` — countdown landing page
 - `src/pages/YYYY/index.astro` — yearly themed event pages
-- `src/components/` — shared components (Countdown, InviteGallery)
+- `src/components/` — shared components (Countdown, CountdownTimer, InviteGallery) plus the current year's themed hero (`HeroYYYY.astro`)
 - `src/layouts/Base.astro` — shared layout (fonts, global styles, atmosphere)
 - `public/invites/` — invite images for gallery
 - `public/YYYY/assets/` — year-specific static assets
@@ -20,7 +20,8 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 - Colors: `#0a0806` bg, `#bf3a2b` accent red, `#d4a853` gold, `#ede4d4` text
 - Warm radial glow for atmosphere (no film grain — it was removed)
 - Countdown targets the 2nd Friday of December at 6 PM MST dynamically
-- The upcoming year's invite sits beside the countdown in the hero (`invite` prop on `Countdown` in `index.astro`); the archive gallery holds past years only
+- The landing hero is themed to the upcoming year (`Hero2026.astro`: dark bedroom, pointer-driven nightlight, reveal on the baby) and embeds `CountdownTimer`; `Countdown.astro` is the plain fallback hero
+- Theme font for 2026 is Fraunces (`--font-theme`); the archive gallery holds past years only
 - Gallery is centered on the page with a fixed floating timeline nav on the right
 - Year labels sit to the left of each card, pulled out of flow to keep cards centered
 - Timeline nav includes the upcoming year (linked to countdown hero) plus all archived years
@@ -29,6 +30,6 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 ## Yearly Workflow
 
 1. Create `src/pages/YYYY/index.astro` + `public/YYYY/assets/`
-2. Add invite image to `public/invites/` and pass it as the `invite` prop to `Countdown` in `index.astro`
+2. Build the year's themed hero (`src/components/HeroYYYY.astro`, keep `id="countdown-hero"` and use `CountdownTimer`) and render it in `index.astro`; save the invite to `public/invites/`
 3. Set `upcomingYear` in `InviteGallery.astro` to the new year
 4. After the event, add that year to the `invites` array in `InviteGallery.astro` so it joins the archive

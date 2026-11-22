@@ -1,0 +1,169 @@
+---
+// Live countdown to the 2nd Friday of December at 6 PM MST.
+// Restyle it from a parent by setting the --cd-* custom properties.
+---
+<div class="countdown" id="countdown">
+    <div class="time-block">
+        <span class="time-value" id="days">--</span>
+        <span class="time-label">Days</span>
+    </div>
+    <span class="time-dot">&middot;</span>
+    <div class="time-block">
+        <span class="time-value" id="hours">--</span>
+        <span class="time-label">Hours</span>
+    </div>
+    <span class="time-dot">&middot;</span>
+    <div class="time-block">
+        <span class="time-value" id="minutes">--</span>
+        <span class="time-label">Min</span>
+    </div>
+    <span class="time-dot">&middot;</span>
+    <div class="time-block">
+        <span class="time-value" id="seconds">--</span>
+        <span class="time-label">Sec</span>
+    </div>
+</div>
+
+<p class="target-date" id="target-date"></p>
+
+<script>
+    function getSecondFridayOfDecember(year: number): number {
+        const dec1 = new Date(year, 11, 1);
+        const dayOfWeek = dec1.getDay();
+        const firstFriday = 1 + ((5 - dayOfWeek + 7) % 7);
+        return firstFriday + 7;
+    }
+
+    function getNextEventDate() {
+        const now = new Date();
+        let year = now.getFullYear();
+        let day = getSecondFridayOfDecember(year);
+        let eventDate = new Date(Date.UTC(year, 11, day + 1, 1, 0, 0));
+
+        if (now >= eventDate) {
+            year++;
+            day = getSecondFridayOfDecember(year);
+            eventDate = new Date(Date.UTC(year, 11, day + 1, 1, 0, 0));
+        }
+
+        return { eventDate, year, day };
+    }
+
+    function pad(n: number): string {
+        return n < 10 ? '0' + n : String(n);
+    }
+
+    function updateCountdown() {
+        const { eventDate, year, day } = getNextEventDate();
+        const now = new Date();
+        const diff = eventDate.getTime() - now.getTime();
+
+        if (diff <= 0) {
+            document.getElementById('days')!.textContent = '00';
+            document.getElementById('hours')!.textContent = '00';
+            document.getElementById('minutes')!.textContent = '00';
+            document.getElementById('seconds')!.textContent = '00';
+            return;
+        }
+
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById('days')!.textContent = pad(d);
+        document.getElementById('hours')!.textContent = pad(h);
+        document.getElementById('minutes')!.textContent = pad(m);
+        document.getElementById('seconds')!.textContent = pad(s);
+        document.getElementById('target-date')!.textContent =
+            'December ' + day + ', ' + year + '  •  6 PM MST';
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+</script>
+
+<style>
+    .countdown {
+        display: flex;
+        justify-content: var(--cd-justify, center);
+        align-items: center;
+        gap: 8px;
+        margin-bottom: var(--cd-gap-after, 36px);
+    }
+
+    .time-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: var(--cd-block-pad, 16px 20px);
+        min-width: var(--cd-block-min, 100px);
+        background: var(--cd-block-bg, rgba(255, 255, 255, 0.02));
+        border: 1px solid var(--cd-block-border, rgba(255, 255, 255, 0.04));
+        border-radius: 8px;
+        backdrop-filter: var(--cd-block-blur, none);
+        -webkit-backdrop-filter: var(--cd-block-blur, none);
+    }
+
+    .time-value {
+        font-family: var(--cd-font, var(--font-display));
+        font-weight: var(--cd-weight, 300);
+        font-size: var(--cd-size, 72px);
+        line-height: 1;
+        letter-spacing: 0.02em;
+        color: var(--text-primary);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .time-label {
+        font-family: var(--font-body);
+        font-weight: 400;
+        font-size: 10px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--cd-label, var(--text-dim));
+        margin-top: 8px;
+    }
+
+    .time-dot {
+        font-size: 32px;
+        color: var(--gold-dim);
+        padding-bottom: 20px;
+    }
+
+    .target-date {
+        font-family: var(--font-body);
+        font-weight: 300;
+        font-size: 13px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--gold);
+        opacity: var(--cd-date-opacity, 0.65);
+    }
+
+    @media (max-width: 600px) {
+        .time-block {
+            min-width: 68px;
+            padding: 12px 10px;
+        }
+
+        .time-value {
+            font-size: var(--cd-size-sm, 44px);
+        }
+
+        .time-dot {
+            font-size: 24px;
+            padding-bottom: 14px;
+        }
+
+        .time-label {
+            font-size: 9px;
+            letter-spacing: 3px;
+        }
+
+        .target-date {
+            font-size: 10px;
+            letter-spacing: 3px;
+        }
+    }
+</style>

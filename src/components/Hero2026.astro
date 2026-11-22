@@ -1,0 +1,449 @@
+---
+// 2026 theme: "'Twas the night before Christmas… except for a baby."
+// The bedroom sits in the dark; a nightlight follows the pointer (or plays a
+// short tour on its own), sleepers puff out z's, and lighting up the
+// wide-awake baby reveals the punchline.
+import CountdownTimer from './CountdownTimer.astro';
+---
+<section class="hero26" id="countdown-hero" data-hero26>
+    <p class="poem">
+        <span>’Twas the night before Christmas,</span>
+        <span>and not a creature was stirring…</span>
+    </p>
+
+    <div class="scene" data-scene>
+        <img
+            class="scene-img"
+            src="/2026/assets/bedroom.jpg"
+            alt="The family asleep in a pile on the bed, with the new baby wide awake in front of them"
+            width="2000"
+            height="2000"
+            data-scene-img
+        />
+        <div class="night" aria-hidden="true"></div>
+        <div class="zzz-layer" aria-hidden="true" data-zzz></div>
+        <p class="hint" data-hint>Move the light. Who’s still awake?</p>
+    </div>
+
+    <div class="details">
+        <p class="punch" data-punch>…except for a baby.</p>
+        <h1 class="title">Hipster Holiday <span class="title-year">2026</span></h1>
+        <div class="timer">
+            <CountdownTimer />
+        </div>
+    </div>
+</section>
+
+<script>
+    // Points in the source photo (2000 × 2000) — z's float from the sleepers' heads
+    const SLEEPERS = [
+        { x: 1080, y: 470 },
+        { x: 1300, y: 590 },
+        { x: 1600, y: 790 },
+        { x: 1840, y: 930 },
+    ];
+    const BABY = { x: 1180, y: 1250, r: 230 };
+    const TOUR = [
+        { x: 1000, y: 300 },
+        ...SLEEPERS,
+        { x: 1500, y: 1250 },
+        BABY,
+    ];
+    const IMG_SIZE = 2000;
+
+    const hero = document.querySelector<HTMLElement>('[data-hero26]');
+    const scene = document.querySelector<HTMLElement>('[data-scene]');
+    const img = document.querySelector<HTMLImageElement>('[data-scene-img]');
+    const zzzLayer = document.querySelector<HTMLElement>('[data-zzz]');
+    const hint = document.querySelector<HTMLElement>('[data-hint]');
+
+    if (hero && scene && img && zzzLayer) {
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const touch = window.matchMedia('(hover: none)').matches;
+        if (hint && touch) hint.textContent = 'Drag the light. Who’s still awake?';
+
+        // Map photo coordinates to scene pixels, honouring object-fit: cover + object-position
+        let map = { scale: 1, ox: 0, oy: 0 };
+        function measure() {
+            const w = scene!.clientWidth;
+            const h = scene!.clientHeight;
+            const scale = Math.max(w / IMG_SIZE, h / IMG_SIZE);
+            const [px, py] = getComputedStyle(img!).objectPosition.split(' ').map((v) => parseFloat(v) / 100);
+            map = { scale, ox: (w - IMG_SIZE * scale) * px, oy: (h - IMG_SIZE * scale) * py };
+        }
+        const toScene = (p: { x: number; y: number }) => ({ x: map.ox + p.x * map.scale, y: map.oy + p.y * map.scale });
+
+        let found = false;
+        function setFound() {
+            if (found) return;
+            found = true;
+            hero!.classList.add('is-found');
+        }
+
+        if (reduceMotion) {
+            measure();
+            const b = toScene(BABY);
+            scene.style.setProperty('--lx', `${b.x}px`);
+            scene.style.setProperty('--ly', `${b.y}px`);
+            setFound();
+        } else {
+            measure();
+            window.addEventListener('resize', measure);
+
+            const start = toScene(TOUR[0]);
+            const cur = { ...start };
+            const target = { ...start };
+            let userDriving = false;
+            let tourStep = 0;
+            let tourTimer = 0;
+
+            function aimAtTourStop() {
+                const p = toScene(TOUR[tourStep]);
+                target.x = p.x;
+                target.y = p.y;
+            }
+
+            function advanceTour() {
+                if (userDriving || tourStep >= TOUR.length - 1) return;
+                tourStep++;
+                aimAtTourStop();
+                tourTimer = window.setTimeout(advanceTour, tourStep === TOUR.length - 2 ? 700 : 950);
+            }
+            tourTimer = window.setTimeout(advanceTour, 1400);
+
+            function onPoint(e: PointerEvent) {
+                const r = scene!.getBoundingClientRect();
+                target.x = e.clientX - r.left;
+                target.y = e.clientY - r.top;
+                if (!userDriving) {
+                    userDriving = true;
+                    window.clearTimeout(tourTimer);
+                    hero!.classList.add('is-driving');
+                }
+            }
+            hero.addEventListener('pointermove', onPoint);
+            hero.addEventListener('pointerdown', onPoint);
+
+            // Follow the target smoothly, only while the hero is on screen
+            let visible = true;
+            let raf = 0;
+            function frame() {
+                if (userDriving === false && tourStep < TOUR.length) aimAtTourStop();
+                cur.x += (target.x - cur.x) * 0.09;
+                cur.y += (target.y - cur.y) * 0.09;
+                scene!.style.setProperty('--lx', `${cur.x.toFixed(1)}px`);
+                scene!.style.setProperty('--ly', `${cur.y.toFixed(1)}px`);
+
+                const b = toScene(BABY);
+                if (Math.hypot(cur.x - b.x, cur.y - b.y) < Math.max(BABY.r * map.scale, 60)) setFound();
+
+                if (visible) raf = requestAnimationFrame(frame);
+            }
+
+            // A "z" drifts up from each sleeper in turn
+            let zTimer = 0;
+            let zIndex = 0;
+            function puff() {
+                const p = toScene(SLEEPERS[zIndex % SLEEPERS.length]);
+                zIndex++;
+                const z = document.createElement('span');
+                z.className = 'zzz';
+                z.textContent = 'z';
+                z.style.left = `${p.x}px`;
+                z.style.top = `${p.y}px`;
+                z.style.setProperty('--size', `${Math.max(16, 70 * map.scale)}px`);
+                z.addEventListener('animationend', () => z.remove());
+                zzzLayer!.appendChild(z);
+            }
+
+            const io = new IntersectionObserver(([entry]) => {
+                visible = entry.isIntersecting;
+                cancelAnimationFrame(raf);
+                window.clearInterval(zTimer);
+                if (visible) {
+                    raf = requestAnimationFrame(frame);
+                    zTimer = window.setInterval(puff, 650);
+                }
+            });
+            io.observe(hero);
+        }
+    }
+</script>
+
+<style>
+    .hero26 {
+        --night: rgba(8, 5, 3, 0.8);
+        --light-r: clamp(130px, 24vmin, 300px);
+        --sheet: #ede4d4;
+
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        min-height: 100svh;
+        display: grid;
+        /* the last column leaves room for the fixed timeline nav */
+        grid-template-columns: minmax(0, 1fr) min(100svh, 54vw) 104px;
+        grid-template-rows: 1fr auto auto 1fr;
+        grid-template-areas:
+            ". scene ."
+            "poem scene ."
+            "details scene ."
+            ". scene .";
+        column-gap: 0;
+        overflow: hidden;
+        background: var(--bg-deep);
+        touch-action: pan-y;
+    }
+
+    /* ---------- the scene ---------- */
+
+    .scene {
+        grid-area: scene;
+        position: relative;
+        overflow: hidden;
+        /* fade the photo's left edge into the night */
+        -webkit-mask-image: linear-gradient(to right, transparent 0, #000 22%, #000 92%, transparent 100%);
+                mask-image: linear-gradient(to right, transparent 0, #000 22%, #000 92%, transparent 100%);
+        --lx: 50%;
+        --ly: 20%;
+    }
+
+    .scene-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 62% 50%;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .night {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+            radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(255, 196, 120, 0.22), transparent 70%),
+            var(--night);
+        -webkit-mask-image: radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(0, 0, 0, 0.15) 0, rgba(0, 0, 0, 0.35) 45%, #000 100%);
+                mask-image: radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(0, 0, 0, 0.15) 0, rgba(0, 0, 0, 0.35) 45%, #000 100%);
+        mix-blend-mode: normal;
+        transition: background-color 1.6s ease;
+    }
+
+    /* once the baby is found the room warms up a little */
+    .is-found .night {
+        --night: rgba(8, 5, 3, 0.6);
+    }
+
+    .zzz-layer {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+    }
+
+    .zzz-layer :global(.zzz) {
+        position: absolute;
+        font-family: var(--font-theme);
+        font-style: italic;
+        font-weight: 600;
+        font-size: var(--size, 28px);
+        line-height: 1;
+        color: var(--sheet);
+        text-shadow: 0 0 12px rgba(255, 200, 130, 0.5);
+        opacity: 0;
+        transform: translate(-50%, -50%);
+        animation: drift 3.2s ease-out forwards;
+    }
+
+    @keyframes drift {
+        0%   { opacity: 0;   transform: translate(-50%, -50%) scale(0.6); }
+        15%  { opacity: 0.9; }
+        100% { opacity: 0;   transform: translate(calc(-50% + 1.4em), calc(-50% - 3.2em)) scale(1.25) rotate(-12deg); }
+    }
+
+    .hint {
+        position: absolute;
+        left: 50%;
+        bottom: 28px;
+        transform: translateX(-50%);
+        margin: 0;
+        padding: 8px 16px;
+        border-radius: 100px;
+        background: rgba(10, 7, 5, 0.55);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        font-family: var(--font-body);
+        font-size: 11px;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--text-mid);
+        white-space: nowrap;
+        opacity: 0;
+        animation: fade-in 0.8s ease 2.6s forwards;
+        transition: opacity 0.6s ease;
+    }
+
+    .is-found .hint {
+        animation: none;
+        opacity: 0;
+    }
+
+    /* ---------- the words ---------- */
+
+    .poem,
+    .details {
+        padding-left: clamp(32px, 7vw, 120px);
+        padding-right: 48px;
+    }
+
+    .poem {
+        grid-area: poem;
+        margin: 0 0 40px;
+        font-family: var(--font-theme);
+        font-style: italic;
+        font-weight: 400;
+        font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 72;
+        font-size: clamp(18px, 1.8vw, 30px);
+        line-height: 1.3;
+        color: var(--text-mid);
+    }
+
+    .poem span {
+        display: block;
+        white-space: nowrap;
+        opacity: 0;
+        animation: fade-up 1s ease forwards;
+    }
+
+    .poem span:nth-child(2) {
+        animation-delay: 0.7s;
+    }
+
+    .details {
+        grid-area: details;
+    }
+
+    .punch {
+        margin: 0 0 6px;
+        font-family: var(--font-theme);
+        font-style: italic;
+        font-weight: 600;
+        font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 96;
+        font-size: clamp(26px, 2.8vw, 44px);
+        color: var(--gold);
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .is-found .punch {
+        opacity: 1;
+        transform: none;
+    }
+
+    .title {
+        margin: 0 0 36px;
+        font-family: var(--font-theme);
+        font-weight: 800;
+        font-variation-settings: 'SOFT' 100, 'WONK' 0, 'opsz' 144;
+        font-size: clamp(52px, 6.4vw, 112px);
+        line-height: 0.95;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+    }
+
+    .title-year {
+        color: var(--accent);
+    }
+
+    .timer {
+        text-align: left;
+        --cd-font: var(--font-theme);
+        --cd-weight: 500;
+        --cd-size: clamp(34px, 3.4vw, 52px);
+        --cd-size-sm: 38px;
+        --cd-block-min: 0;
+        --cd-block-pad: 12px 16px;
+        --cd-block-bg: rgba(255, 255, 255, 0.035);
+        --cd-block-border: rgba(255, 255, 255, 0.06);
+        --cd-justify: flex-start;
+        --cd-gap-after: 20px;
+        --cd-date-opacity: 0.8;
+    }
+
+    @keyframes fade-up {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: none; }
+    }
+
+    @keyframes fade-in {
+        to { opacity: 1; }
+    }
+
+    /* ---------- stacked: tablets and phones ---------- */
+
+    @media (max-width: 900px), (orientation: portrait) {
+        .hero26 {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto auto;
+            grid-template-areas:
+                "poem"
+                "scene"
+                "details";
+            align-content: center;
+            padding: 56px 0 72px;
+        }
+
+        .scene {
+            width: 100%;
+            max-width: 640px;
+            aspect-ratio: 1 / 1;
+            justify-self: center;
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+                    mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+        }
+
+        .poem,
+        .details {
+            padding: 0 24px;
+            text-align: center;
+        }
+
+        .poem {
+            margin-bottom: 8px;
+            font-size: clamp(20px, 5vw, 28px);
+        }
+
+        .details {
+            margin-top: 4px;
+        }
+
+        .title {
+            font-size: clamp(44px, 12vw, 84px);
+            margin-bottom: 28px;
+        }
+
+        .timer {
+            text-align: center;
+            --cd-justify: center;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .poem span,
+        .hint {
+            animation: none;
+            opacity: 1;
+        }
+
+        .hint {
+            display: none;
+        }
+
+        .punch {
+            transition: none;
+        }
+    }
+</style>

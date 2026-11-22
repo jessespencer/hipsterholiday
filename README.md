@@ -4,7 +4,7 @@ Annual holiday party site at [hipsterholiday.com](https://hipsterholiday.com). B
 
 Between events, the site shows a countdown to the next party (always the 2nd Friday of December at 6 PM MST). Each year gets a unique themed page archived at `/YYYY/`.
 
-The landing page features a centered invite gallery with a floating timeline nav on the right for quick year navigation, plus a warm atmospheric glow aesthetic.
+The landing page opens on a header themed to the upcoming party (for 2026, a dark bedroom you explore with a nightlight until you find who's still awake), above a centered invite gallery with a floating timeline nav on the right for quick year navigation, plus a warm atmospheric glow aesthetic.
 
 ## Dev
 
@@ -22,7 +22,9 @@ Push to `main` to deploy via GitHub Pages.
 
 - `src/pages/index.astro` — countdown + invite gallery landing page
 - `src/pages/YYYY/index.astro` — yearly themed event pages
-- `src/components/Countdown.astro` — dynamic countdown timer
+- `src/components/Hero2026.astro` — this year's interactive themed header
+- `src/components/CountdownTimer.astro` — dynamic countdown timer
+- `src/components/Countdown.astro` — plain countdown header (fallback)
 - `src/components/InviteGallery.astro` — archive gallery with timeline nav
 - `src/layouts/Base.astro` — shared layout (fonts, global styles, atmosphere)
 - `public/invites/` — invite images for gallery
