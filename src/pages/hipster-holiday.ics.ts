@@ -45,7 +45,7 @@ export function GET() {
         `SUMMARY:${text(`The Spencer Family’s Hipster Holiday ${event.year}`)}`,
         `LOCATION:${text(event.location)}`,
         `DESCRIPTION:${text(
-            `’Twas the night before Christmas, and not a creature was stirring… except for a baby.\nPajamas on, cookies out.\nDetails and RSVP: ${SITE}`,
+            `’Twas the night before Christmas, the parents half crazy, not a creature was stirring… except for the baby.\nPajamas on, cookies out.\nDetails and RSVP: ${SITE}`,
         )}`,
         `URL:${SITE}`,
         'BEGIN:VALARM',

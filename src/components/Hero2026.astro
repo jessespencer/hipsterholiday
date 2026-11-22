@@ -1,5 +1,5 @@
 ---
-// 2026 theme: "'Twas the night before Christmas… except for a baby."
+// 2026 theme: "'Twas the night before Christmas, the parents half crazy, not a creature was stirring… except for the baby."
 // The bedroom sits in the dark; a nightlight follows the pointer (or plays a
 // short tour on its own) and the sleepers puff out z's. Lighting up the baby
 // wakes the scene: she gets her own spotlight, wide-awake marks and sparkles,
@@ -8,8 +8,8 @@ import CountdownTimer from './CountdownTimer.astro';
 ---
 <section class="hero26" id="countdown-hero" data-hero26>
     <p class="poem">
-        <span>’Twas the night before Christmas,</span>
-        <span>and not a creature was stirring…</span>
+        <span>’Twas the night before Christmas, the parents half crazy,</span>
+        <span>not a creature was stirring…</span>
     </p>
 
     <div class="scene" data-scene>
@@ -35,7 +35,7 @@ import CountdownTimer from './CountdownTimer.astro';
         </svg>
     </div>
 
-    <p class="punch">…except for a baby.</p>
+    <p class="punch">…except for the baby.</p>
 
     <div class="details">
         <h1 class="title">
@@ -792,6 +792,12 @@ import CountdownTimer from './CountdownTimer.astro';
 
     /* ---- phones: tighter crop, lighter room, smaller title ---- */
     @media (max-width: 900px), (orientation: portrait) {
+        /* the longer first line wraps evenly on narrow screens */
+        .hero26 .poem span {
+            white-space: normal;
+            text-wrap: balance;
+        }
+
         .hero26 {
             --night: rgba(6, 4, 2, 0.8);
             align-content: start;
@@ -977,7 +983,7 @@ import CountdownTimer from './CountdownTimer.astro';
             grid-area: scene;
             max-width: none;
             aspect-ratio: auto;
-            height: min(54svh, 100vw);
+            height: min(50svh, 92vw);
             margin-top: 4px;
             -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 10%, #000 84%, transparent 100%);
                     mask-image: linear-gradient(to bottom, transparent 0, #000 10%, #000 84%, transparent 100%);
