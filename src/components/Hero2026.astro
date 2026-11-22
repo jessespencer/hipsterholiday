@@ -38,7 +38,10 @@ import CountdownTimer from './CountdownTimer.astro';
 
     <div class="details">
         <p class="punch">…except for a baby.</p>
-        <h1 class="title">Hipster Holiday <span class="title-year">2026</span></h1>
+        <h1 class="title">
+            <span class="title-kicker">The Spencer Family’s</span>
+            Hipster Holiday <span class="title-year">2026</span>
+        </h1>
         <span class="rule" aria-hidden="true"></span>
         <div class="timer">
             <CountdownTimer />
@@ -512,6 +515,18 @@ const TOUR = [...SLEEPERS, { x: 1500, y: 1250 }, BABY_HEAD];
 
     .title-year {
         color: var(--gold);
+    }
+
+    .title-kicker {
+        display: block;
+        margin-bottom: clamp(10px, 1.1vw, 16px);
+        font-weight: 600;
+        font-variation-settings: 'SOFT' 100, 'WONK' 0, 'opsz' 24;
+        font-size: clamp(13px, 1.05vw, 17px);
+        line-height: 1;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--verse);
     }
 
     .rule {
