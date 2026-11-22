@@ -27,6 +27,9 @@ function doPost(e) {
   // Honeypot: real visitors never fill this field
   if (p.company) return ok();
 
+  // The site requires these, so anything without them isn't a real RSVP
+  if (!String(p.name || '').trim() || !String(p.email || '').trim()) return ok();
+
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {

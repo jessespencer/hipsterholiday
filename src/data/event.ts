@@ -37,6 +37,6 @@ export const event = {
 } as const;
 
 // Google Apps Script web-app URL that writes RSVPs into the Google Sheet.
-// Set it up with scripts/rsvp-sheet.gs (steps in the README), then paste the
-// deployment URL here. Until then the form explains that RSVPs aren't open yet.
-export const RSVP_ENDPOINT = '';
+// Set up with scripts/rsvp-sheet.gs (steps in the README). Anyone can post here;
+// the script only appends rows, so the URL is safe to publish. Empty = RSVPs closed.
+export const RSVP_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwLW_IVvEzDUqm20nZNCBd8Mnk7kPOGm3O3Z8UHhi9cipwPlkesQy5pYDGY4nGr9_PU/exec';
