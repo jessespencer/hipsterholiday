@@ -109,6 +109,12 @@ import CountdownTimer from './CountdownTimer.astro';
             awake!.style.top = `${head.y}px`;
             awake!.style.width = `${400 * scale}px`;
 
+            // With reduced motion the light simply rests on the baby
+            if (reduceMotion) {
+                const rest = toScene(BABY_BODY);
+                setLight(rest.x, rest.y);
+            }
+
             // Centre the verse and punchline on the middle of the bed, not on their column
             const verse = hero!.querySelector<HTMLElement>('.poem');
             if (verse) {
@@ -144,8 +150,12 @@ import CountdownTimer from './CountdownTimer.astro';
             hero!.classList.add('is-found');
         }
 
+        // Re-measure whenever the scene's size actually changes. Safari runs this script
+        // before layout settles, so a one-off measurement can be badly stale.
         measure();
+        new ResizeObserver(() => measure()).observe(scene);
         window.addEventListener('resize', measure);
+        document.fonts?.ready.then(measure);
 
         if (reduceMotion) {
             const body = toScene(BABY_BODY);
@@ -233,6 +243,12 @@ import CountdownTimer from './CountdownTimer.astro';
                     introDone = true;
                     hero!.classList.add('is-ready');
                 }
+                // While the light is still off it just sits on the first stop, so a stale
+                // starting point never sweeps across the room
+                if (!userDriving && !hero!.classList.contains('is-lit')) {
+                    cur.x = target.x;
+                    cur.y = target.y;
+                }
                 cur.x += (target.x - cur.x) * ease;
                 cur.y += (target.y - cur.y) * ease;
 
@@ -242,7 +258,9 @@ import CountdownTimer from './CountdownTimer.astro';
                 setLight(cur.x + (body.x - cur.x) * morph, cur.y + (body.y - cur.y) * morph);
                 scene!.style.setProperty('--m', morph.toFixed(3));
 
-                if (Math.hypot(cur.x - head.x, cur.y - head.y) < Math.max(FIND_RADIUS * map.scale, 60)) wake();
+                // Only the tour's final stop (or the visitor) can find her; passing by doesn't count
+                const searching = userDriving || tourStep === TOUR.length - 1;
+                if (searching && Math.hypot(cur.x - head.x, cur.y - head.y) < Math.max(FIND_RADIUS * map.scale, 60)) wake();
                 if (visible) raf = requestAnimationFrame(frame);
             }
 
