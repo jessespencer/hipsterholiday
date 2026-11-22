@@ -134,8 +134,9 @@ import CountdownTimer from './CountdownTimer.astro';
         window.addEventListener('resize', measure);
 
         if (reduceMotion) {
-            const head = toScene(BABY_HEAD);
-            setLight(head.x, head.y);
+            const body = toScene(BABY_BODY);
+            setLight(body.x, body.y);
+            scene.style.setProperty('--m', '1');
             hero.classList.add('is-lit');
             wake();
         } else {
@@ -173,6 +174,10 @@ import CountdownTimer from './CountdownTimer.astro';
             let visible = true;
             let raf = 0;
             let last = 0;
+            // 0 = round nightlight, 1 = stretched over the baby's whole body.
+            // After the tour the light itself becomes her spotlight; when the
+            // visitor takes the light, it shrinks back and her own spotlight holds.
+            let morph = 0;
             function frame(now: number) {
                 // Ease toward the target at the same speed regardless of frame rate
                 const dt = last ? Math.min(now - last, 100) : 16.7;
@@ -196,7 +201,12 @@ import CountdownTimer from './CountdownTimer.astro';
                 }
                 cur.x += (target.x - cur.x) * ease;
                 cur.y += (target.y - cur.y) * ease;
-                setLight(cur.x, cur.y);
+
+                const morphTarget = found && !userDriving ? 1 : 0;
+                morph += (morphTarget - morph) * (1 - Math.pow(1 - 0.05, dt / 16.7));
+                const body = toScene(BABY_BODY);
+                setLight(cur.x + (body.x - cur.x) * morph, cur.y + (body.y - cur.y) * morph);
+                scene!.style.setProperty('--m', morph.toFixed(3));
 
                 if (Math.hypot(cur.x - head.x, cur.y - head.y) < Math.max(FIND_RADIUS * map.scale, 60)) wake();
                 if (visible) raf = requestAnimationFrame(frame);
@@ -289,10 +299,12 @@ import CountdownTimer from './CountdownTimer.astro';
         --brx: 200px;
         --bry: 110px;
         --baby-on: 0;
-        transition: --baby-on 1.4s ease 0.3s;
+        --m: 0;
+        transition: --baby-on 0.6s ease;
     }
 
-    .is-found .scene {
+    /* Her own spotlight only takes over once the visitor moves the light away */
+    .is-driving .scene {
         --baby-on: 1;
     }
 
@@ -312,22 +324,29 @@ import CountdownTimer from './CountdownTimer.astro';
     }
 
     /* Darkness with two holes: the moving nightlight, and (once found) a spotlight on the baby */
+    /* The nightlight's radii, blending from a circle to the baby's body ellipse */
+    .night,
+    .baby-glow {
+        --lrx: calc(var(--light-r) * (1 - var(--m)) + var(--brx) * var(--m));
+        --lry: calc(var(--light-r) * (1 - var(--m)) + var(--bry) * var(--m));
+    }
+
     .night {
         position: absolute;
         inset: 0;
         pointer-events: none;
         background:
-            radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(255, 196, 120, 0.22), transparent 70%),
+            radial-gradient(ellipse var(--lrx) var(--lry) at var(--lx) var(--ly), rgba(255, 196, 120, 0.22), transparent 70%),
             var(--night);
         -webkit-mask-image:
-            radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(0, 0, 0, 0.05) 0, rgba(0, 0, 0, 0.3) 45%, #000 100%),
+            radial-gradient(ellipse var(--lrx) var(--lry) at var(--lx) var(--ly), rgba(0, 0, 0, 0.05) 0, rgba(0, 0, 0, 0.3) 45%, #000 100%),
             radial-gradient(ellipse var(--brx) var(--bry) at var(--bx) var(--by),
                 rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.95)) 0,
                 rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.8)) 55%,
                 #000 100%);
         -webkit-mask-composite: source-in;
                 mask-image:
-            radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(0, 0, 0, 0.05) 0, rgba(0, 0, 0, 0.3) 45%, #000 100%),
+            radial-gradient(ellipse var(--lrx) var(--lry) at var(--lx) var(--ly), rgba(0, 0, 0, 0.05) 0, rgba(0, 0, 0, 0.3) 45%, #000 100%),
             radial-gradient(ellipse var(--brx) var(--bry) at var(--bx) var(--by),
                 rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.95)) 0,
                 rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.8)) 55%,
@@ -343,7 +362,7 @@ import CountdownTimer from './CountdownTimer.astro';
         background: radial-gradient(ellipse calc(var(--brx) * 1.1) calc(var(--bry) * 1.2) at var(--bx) var(--by),
             rgba(255, 200, 130, 0.22), transparent 70%);
         mix-blend-mode: screen;
-        opacity: var(--baby-on);
+        opacity: max(var(--baby-on), var(--m));
     }
 
     .fx-layer {
