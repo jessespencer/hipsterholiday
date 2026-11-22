@@ -1,8 +1,9 @@
 ---
 // 2026 theme: "'Twas the night before Christmas… except for a baby."
 // The bedroom sits in the dark; a nightlight follows the pointer (or plays a
-// short tour on its own), sleepers puff out z's, and lighting up the
-// wide-awake baby reveals the punchline.
+// short tour on its own) and the sleepers puff out z's. Lighting up the baby
+// wakes the scene: she gets her own spotlight, wide-awake marks and sparkles,
+// and the punchline appears.
 import CountdownTimer from './CountdownTimer.astro';
 ---
 <section class="hero26" id="countdown-hero" data-hero26>
@@ -21,13 +22,24 @@ import CountdownTimer from './CountdownTimer.astro';
             data-scene-img
         />
         <div class="night" aria-hidden="true"></div>
-        <div class="zzz-layer" aria-hidden="true" data-zzz></div>
+        <div class="baby-glow" aria-hidden="true"></div>
+        <div class="fx-layer" aria-hidden="true" data-fx></div>
+        <svg class="awake" viewBox="-200 -200 400 400" aria-hidden="true" data-awake>
+            <g class="awake-lines">
+                <path d="M -118 -96 L -150 -128" />
+                <path d="M -62 -138 L -78 -182" />
+                <path d="M 4 -150 L 4 -196" />
+                <path d="M 68 -136 L 86 -178" />
+                <path d="M 120 -94 L 154 -122" />
+            </g>
+        </svg>
         <p class="hint" data-hint>Move the light. Who’s still awake?</p>
     </div>
 
     <div class="details">
-        <p class="punch" data-punch>…except for a baby.</p>
+        <p class="punch">…except for a baby.</p>
         <h1 class="title">Hipster Holiday <span class="title-year">2026</span></h1>
+        <span class="rule" aria-hidden="true"></span>
         <div class="timer">
             <CountdownTimer />
         </div>
@@ -35,61 +47,91 @@ import CountdownTimer from './CountdownTimer.astro';
 </section>
 
 <script>
-    // Points in the source photo (2000 × 2000) — z's float from the sleepers' heads
+    // Points in the source photo (2000 × 2000)
+    const IMG_SIZE = 2000;
     const SLEEPERS = [
         { x: 1080, y: 470 },
         { x: 1300, y: 590 },
         { x: 1600, y: 790 },
         { x: 1840, y: 930 },
     ];
-    const BABY = { x: 1180, y: 1250, r: 230 };
-    const TOUR = [
-        { x: 1000, y: 300 },
-        ...SLEEPERS,
-        { x: 1500, y: 1250 },
-        BABY,
-    ];
-    const IMG_SIZE = 2000;
+    const BABY_HEAD = { x: 1311, y: 1229 };
+    const BABY_BODY = { x: 1000, y: 1270, rx: 520, ry: 290 };
+    const FIND_RADIUS = 260;
+    // The light switches on over the first sleeper, visits the others, then finds the baby
+const TOUR = [...SLEEPERS, { x: 1500, y: 1250 }, BABY_HEAD];
 
     const hero = document.querySelector<HTMLElement>('[data-hero26]');
     const scene = document.querySelector<HTMLElement>('[data-scene]');
     const img = document.querySelector<HTMLImageElement>('[data-scene-img]');
-    const zzzLayer = document.querySelector<HTMLElement>('[data-zzz]');
+    const fx = document.querySelector<HTMLElement>('[data-fx]');
+    const awake = document.querySelector<SVGElement>('[data-awake]');
     const hint = document.querySelector<HTMLElement>('[data-hint]');
 
-    if (hero && scene && img && zzzLayer) {
+    if (hero && scene && img && fx && awake) {
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const touch = window.matchMedia('(hover: none)').matches;
-        if (hint && touch) hint.textContent = 'Drag the light. Who’s still awake?';
+        if (hint && window.matchMedia('(hover: none)').matches) {
+            hint.textContent = 'Drag the light. Who’s still awake?';
+        }
 
         // Map photo coordinates to scene pixels, honouring object-fit: cover + object-position
         let map = { scale: 1, ox: 0, oy: 0 };
+        const toScene = (p: { x: number; y: number }) => ({ x: map.ox + p.x * map.scale, y: map.oy + p.y * map.scale });
+
         function measure() {
             const w = scene!.clientWidth;
             const h = scene!.clientHeight;
             const scale = Math.max(w / IMG_SIZE, h / IMG_SIZE);
             const [px, py] = getComputedStyle(img!).objectPosition.split(' ').map((v) => parseFloat(v) / 100);
             map = { scale, ox: (w - IMG_SIZE * scale) * px, oy: (h - IMG_SIZE * scale) * py };
+
+            // Pin the baby's spotlight and awake marks to her
+            const body = toScene(BABY_BODY);
+            const head = toScene(BABY_HEAD);
+            scene!.style.setProperty('--bx', `${body.x}px`);
+            scene!.style.setProperty('--by', `${body.y}px`);
+            scene!.style.setProperty('--brx', `${BABY_BODY.rx * scale}px`);
+            scene!.style.setProperty('--bry', `${BABY_BODY.ry * scale}px`);
+            awake!.style.left = `${head.x}px`;
+            awake!.style.top = `${head.y}px`;
+            awake!.style.width = `${400 * scale}px`;
         }
-        const toScene = (p: { x: number; y: number }) => ({ x: map.ox + p.x * map.scale, y: map.oy + p.y * map.scale });
+
+        const setLight = (x: number, y: number) => {
+            scene!.style.setProperty('--lx', `${x.toFixed(1)}px`);
+            scene!.style.setProperty('--ly', `${y.toFixed(1)}px`);
+        };
+
+        function spawn(cls: string, text: string, p: { x: number; y: number }, size: number) {
+            const el = document.createElement('span');
+            el.className = cls;
+            el.textContent = text;
+            el.style.left = `${p.x}px`;
+            el.style.top = `${p.y}px`;
+            el.style.setProperty('--size', `${size}px`);
+            el.style.setProperty('--dx', `${(Math.random() - 0.3) * 2.4}em`);
+            el.addEventListener('animationend', () => el.remove());
+            fx!.appendChild(el);
+        }
 
         let found = false;
-        function setFound() {
+        let lockUntil = 0;
+        function wake() {
             if (found) return;
             found = true;
+            lockUntil = performance.now() + 1600;
             hero!.classList.add('is-found');
         }
 
-        if (reduceMotion) {
-            measure();
-            const b = toScene(BABY);
-            scene.style.setProperty('--lx', `${b.x}px`);
-            scene.style.setProperty('--ly', `${b.y}px`);
-            setFound();
-        } else {
-            measure();
-            window.addEventListener('resize', measure);
+        measure();
+        window.addEventListener('resize', measure);
 
+        if (reduceMotion) {
+            const head = toScene(BABY_HEAD);
+            setLight(head.x, head.y);
+            hero.classList.add('is-lit');
+            wake();
+        } else {
             const start = toScene(TOUR[0]);
             const cur = { ...start };
             const target = { ...start };
@@ -97,19 +139,14 @@ import CountdownTimer from './CountdownTimer.astro';
             let tourStep = 0;
             let tourTimer = 0;
 
-            function aimAtTourStop() {
-                const p = toScene(TOUR[tourStep]);
-                target.x = p.x;
-                target.y = p.y;
-            }
-
             function advanceTour() {
                 if (userDriving || tourStep >= TOUR.length - 1) return;
                 tourStep++;
-                aimAtTourStop();
                 tourTimer = window.setTimeout(advanceTour, tourStep === TOUR.length - 2 ? 700 : 950);
             }
-            tourTimer = window.setTimeout(advanceTour, 1400);
+            setLight(start.x, start.y);
+            window.setTimeout(() => hero!.classList.add('is-lit'), 500);
+            tourTimer = window.setTimeout(advanceTour, 1900);
 
             function onPoint(e: PointerEvent) {
                 const r = scene!.getBoundingClientRect();
@@ -118,51 +155,55 @@ import CountdownTimer from './CountdownTimer.astro';
                 if (!userDriving) {
                     userDriving = true;
                     window.clearTimeout(tourTimer);
-                    hero!.classList.add('is-driving');
                 }
             }
             hero.addEventListener('pointermove', onPoint);
             hero.addEventListener('pointerdown', onPoint);
 
-            // Follow the target smoothly, only while the hero is on screen
             let visible = true;
             let raf = 0;
-            function frame() {
-                if (userDriving === false && tourStep < TOUR.length) aimAtTourStop();
+            function frame(now: number) {
+                // Tour stops are re-mapped each frame so a resize mid-tour stays on target.
+                // Right after waking, the light holds on the baby for a beat.
+                const head = toScene(BABY_HEAD);
+                if (found && now < lockUntil) {
+                    target.x = head.x;
+                    target.y = head.y;
+                } else if (!userDriving) {
+                    const p = toScene(TOUR[tourStep]);
+                    target.x = p.x;
+                    target.y = p.y;
+                }
                 cur.x += (target.x - cur.x) * 0.09;
                 cur.y += (target.y - cur.y) * 0.09;
-                scene!.style.setProperty('--lx', `${cur.x.toFixed(1)}px`);
-                scene!.style.setProperty('--ly', `${cur.y.toFixed(1)}px`);
+                setLight(cur.x, cur.y);
 
-                const b = toScene(BABY);
-                if (Math.hypot(cur.x - b.x, cur.y - b.y) < Math.max(BABY.r * map.scale, 60)) setFound();
-
+                if (Math.hypot(cur.x - head.x, cur.y - head.y) < Math.max(FIND_RADIUS * map.scale, 60)) wake();
                 if (visible) raf = requestAnimationFrame(frame);
             }
 
-            // A "z" drifts up from each sleeper in turn
-            let zTimer = 0;
-            let zIndex = 0;
+            // Sleepers breathe out z's; once she's found, the baby gives off sparkles
+            let tick = 0;
+            let fxTimer = 0;
             function puff() {
-                const p = toScene(SLEEPERS[zIndex % SLEEPERS.length]);
-                zIndex++;
-                const z = document.createElement('span');
-                z.className = 'zzz';
-                z.textContent = 'z';
-                z.style.left = `${p.x}px`;
-                z.style.top = `${p.y}px`;
-                z.style.setProperty('--size', `${Math.max(16, 70 * map.scale)}px`);
-                z.addEventListener('animationend', () => z.remove());
-                zzzLayer!.appendChild(z);
+                const sleeper = toScene(SLEEPERS[tick % SLEEPERS.length]);
+                spawn('zzz', 'z', sleeper, Math.max(16, 70 * map.scale));
+                if (found && tick % 2 === 0) {
+                    const head = toScene(BABY_HEAD);
+                    const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.2;
+                    const r = 170 * map.scale;
+                    spawn('spark', '✦', { x: head.x + Math.cos(a) * r, y: head.y + Math.sin(a) * r }, Math.max(12, 44 * map.scale));
+                }
+                tick++;
             }
 
             const io = new IntersectionObserver(([entry]) => {
                 visible = entry.isIntersecting;
                 cancelAnimationFrame(raf);
-                window.clearInterval(zTimer);
+                window.clearInterval(fxTimer);
                 if (visible) {
                     raf = requestAnimationFrame(frame);
-                    zTimer = window.setInterval(puff, 650);
+                    fxTimer = window.setInterval(puff, 650);
                 }
             });
             io.observe(hero);
@@ -171,10 +212,28 @@ import CountdownTimer from './CountdownTimer.astro';
 </script>
 
 <style>
+    /* Lets the baby's spotlight fade in smoothly */
+    /* Lets the nightlight switch on gradually instead of appearing at full size */
+    @property --light-on {
+        syntax: '<number>';
+        inherits: true;
+        initial-value: 0;
+    }
+
+    @property --baby-on {
+        syntax: '<number>';
+        inherits: true;
+        initial-value: 0;
+    }
+
     .hero26 {
         --night: rgba(8, 5, 3, 0.8);
-        --light-r: clamp(130px, 24vmin, 300px);
-        --sheet: #ede4d4;
+        --light-size: clamp(130px, 24vmin, 300px);
+        --light-on: 0;
+        --light-r: max(1px, calc(var(--light-size) * var(--light-on)));
+        transition: --light-on 1.3s cubic-bezier(0.22, 1, 0.36, 1);
+        --cream: #ede4d4;
+        --verse: rgba(237, 228, 212, 0.72);
 
         position: relative;
         z-index: 1;
@@ -189,7 +248,6 @@ import CountdownTimer from './CountdownTimer.astro';
             "poem scene ."
             "details scene ."
             ". scene .";
-        column-gap: 0;
         overflow: hidden;
         background: var(--bg-deep);
         touch-action: pan-y;
@@ -201,11 +259,24 @@ import CountdownTimer from './CountdownTimer.astro';
         grid-area: scene;
         position: relative;
         overflow: hidden;
-        /* fade the photo's left edge into the night */
         -webkit-mask-image: linear-gradient(to right, transparent 0, #000 22%, #000 92%, transparent 100%);
                 mask-image: linear-gradient(to right, transparent 0, #000 22%, #000 92%, transparent 100%);
         --lx: 50%;
         --ly: 20%;
+        --bx: 50%;
+        --by: 65%;
+        --brx: 200px;
+        --bry: 110px;
+        --baby-on: 0;
+        transition: --baby-on 1.4s ease 0.3s;
+    }
+
+    .is-found .scene {
+        --baby-on: 1;
+    }
+
+    .is-lit {
+        --light-on: 1;
     }
 
     .scene-img {
@@ -219,6 +290,7 @@ import CountdownTimer from './CountdownTimer.astro';
         -webkit-user-drag: none;
     }
 
+    /* Darkness with two holes: the moving nightlight, and (once found) a spotlight on the baby */
     .night {
         position: absolute;
         inset: 0;
@@ -226,41 +298,122 @@ import CountdownTimer from './CountdownTimer.astro';
         background:
             radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(255, 196, 120, 0.22), transparent 70%),
             var(--night);
-        -webkit-mask-image: radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(0, 0, 0, 0.15) 0, rgba(0, 0, 0, 0.35) 45%, #000 100%);
-                mask-image: radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(0, 0, 0, 0.15) 0, rgba(0, 0, 0, 0.35) 45%, #000 100%);
-        mix-blend-mode: normal;
-        transition: background-color 1.6s ease;
+        -webkit-mask-image:
+            radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(0, 0, 0, 0.15) 0, rgba(0, 0, 0, 0.35) 45%, #000 100%),
+            radial-gradient(ellipse var(--brx) var(--bry) at var(--bx) var(--by),
+                rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.95)) 0,
+                rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.8)) 55%,
+                #000 100%);
+        -webkit-mask-composite: source-in;
+                mask-image:
+            radial-gradient(circle var(--light-r) at var(--lx) var(--ly), rgba(0, 0, 0, 0.15) 0, rgba(0, 0, 0, 0.35) 45%, #000 100%),
+            radial-gradient(ellipse var(--brx) var(--bry) at var(--bx) var(--by),
+                rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.95)) 0,
+                rgba(0, 0, 0, calc(1 - var(--baby-on) * 0.8)) 55%,
+                #000 100%);
+                mask-composite: intersect;
     }
 
-    /* once the baby is found the room warms up a little */
-    .is-found .night {
-        --night: rgba(8, 5, 3, 0.6);
+    /* Warm stage light that settles on the baby */
+    .baby-glow {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(ellipse calc(var(--brx) * 1.1) calc(var(--bry) * 1.2) at var(--bx) var(--by),
+            rgba(255, 200, 130, 0.22), transparent 70%);
+        mix-blend-mode: screen;
+        opacity: var(--baby-on);
     }
 
-    .zzz-layer {
+    .fx-layer {
         position: absolute;
         inset: 0;
         pointer-events: none;
     }
 
-    .zzz-layer :global(.zzz) {
+    .fx-layer :global(.zzz),
+    .fx-layer :global(.spark) {
         position: absolute;
         font-family: var(--font-theme);
-        font-style: italic;
-        font-weight: 600;
         font-size: var(--size, 28px);
         line-height: 1;
-        color: var(--sheet);
-        text-shadow: 0 0 12px rgba(255, 200, 130, 0.5);
         opacity: 0;
         transform: translate(-50%, -50%);
+    }
+
+    .fx-layer :global(.zzz) {
+        font-style: italic;
+        font-weight: 600;
+        color: var(--cream);
+        text-shadow: 0 0 12px rgba(255, 200, 130, 0.5);
         animation: drift 3.2s ease-out forwards;
+    }
+
+    .fx-layer :global(.spark) {
+        color: var(--gold);
+        text-shadow: 0 0 10px rgba(212, 168, 83, 0.8);
+        animation: twinkle 1.6s ease-out forwards;
     }
 
     @keyframes drift {
         0%   { opacity: 0;   transform: translate(-50%, -50%) scale(0.6); }
         15%  { opacity: 0.9; }
         100% { opacity: 0;   transform: translate(calc(-50% + 1.4em), calc(-50% - 3.2em)) scale(1.25) rotate(-12deg); }
+    }
+
+    @keyframes twinkle {
+        0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.2) rotate(0deg); }
+        30%  { opacity: 1; transform: translate(-50%, -50%) scale(1.1) rotate(25deg); }
+        100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0em)), calc(-50% - 1.6em)) scale(0.6) rotate(70deg); }
+    }
+
+    /* "Wide awake" marks that draw in around her head */
+    .awake {
+        position: absolute;
+        width: 160px;
+        height: auto;
+        aspect-ratio: 1;
+        transform: translate(-50%, -50%);
+        overflow: visible;
+        pointer-events: none;
+    }
+
+    .awake-lines path {
+        fill: none;
+        stroke: var(--gold);
+        stroke-width: 12;
+        stroke-linecap: round;
+        stroke-dasharray: 60;
+        stroke-dashoffset: 60;
+        filter: drop-shadow(0 0 6px rgba(212, 168, 83, 0.7));
+    }
+
+    .is-found .awake-lines path {
+        animation: draw 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards, jitter 1.8s ease-in-out 1.2s infinite;
+    }
+
+    .is-found .awake-lines path:nth-child(2) { animation-delay: 0.08s, 1.28s; }
+    .is-found .awake-lines path:nth-child(3) { animation-delay: 0.16s, 1.36s; }
+    .is-found .awake-lines path:nth-child(4) { animation-delay: 0.24s, 1.44s; }
+    .is-found .awake-lines path:nth-child(5) { animation-delay: 0.32s, 1.52s; }
+
+    .is-found .awake-lines {
+        animation: pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s both;
+        transform-origin: 0 0;
+    }
+
+    @keyframes draw {
+        to { stroke-dashoffset: 0; }
+    }
+
+    @keyframes jitter {
+        0%, 100% { opacity: 1; }
+        50%      { opacity: 0.45; }
+    }
+
+    @keyframes pop {
+        from { transform: scale(0.85); }
+        to   { transform: scale(1); }
     }
 
     .hint {
@@ -282,32 +435,39 @@ import CountdownTimer from './CountdownTimer.astro';
         white-space: nowrap;
         opacity: 0;
         animation: fade-in 0.8s ease 2.6s forwards;
-        transition: opacity 0.6s ease;
     }
 
     .is-found .hint {
         animation: none;
         opacity: 0;
+        transition: opacity 0.6s ease;
     }
 
-    /* ---------- the words ---------- */
+    /* ---------- the words: one voice ----------
+       Fraunces italic carries the verse (cream, then gold for the punchline),
+       Fraunces bold carries the name, and the numbers use the same face. */
 
     .poem,
     .details {
         padding-left: clamp(32px, 7vw, 120px);
-        padding-right: 48px;
+        padding-right: 40px;
     }
 
-    .poem {
-        grid-area: poem;
-        margin: 0 0 40px;
+    .poem,
+    .punch {
         font-family: var(--font-theme);
         font-style: italic;
         font-weight: 400;
         font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 72;
-        font-size: clamp(18px, 1.8vw, 30px);
-        line-height: 1.3;
-        color: var(--text-mid);
+        font-size: clamp(19px, 1.75vw, 28px);
+        line-height: 1.35;
+        letter-spacing: 0.005em;
+    }
+
+    .poem {
+        grid-area: poem;
+        margin: 0;
+        color: var(--verse);
     }
 
     .poem span {
@@ -326,16 +486,12 @@ import CountdownTimer from './CountdownTimer.astro';
     }
 
     .punch {
-        margin: 0 0 6px;
-        font-family: var(--font-theme);
-        font-style: italic;
+        margin: 0 0 clamp(18px, 2vw, 28px);
         font-weight: 600;
-        font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 96;
-        font-size: clamp(26px, 2.8vw, 44px);
         color: var(--gold);
         opacity: 0;
-        transform: translateY(10px);
-        transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        transform: translateY(6px);
+        transition: opacity 0.9s ease 0.4s, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
     }
 
     .is-found .punch {
@@ -344,33 +500,76 @@ import CountdownTimer from './CountdownTimer.astro';
     }
 
     .title {
-        margin: 0 0 36px;
+        margin: 0;
         font-family: var(--font-theme);
         font-weight: 800;
         font-variation-settings: 'SOFT' 100, 'WONK' 0, 'opsz' 144;
-        font-size: clamp(52px, 6.4vw, 112px);
+        font-size: clamp(52px, 6.2vw, 108px);
         line-height: 0.95;
         letter-spacing: -0.02em;
-        color: var(--text-primary);
+        color: var(--cream);
     }
 
     .title-year {
-        color: var(--accent);
+        color: var(--gold);
     }
 
-    .timer {
-        text-align: left;
-        --cd-font: var(--font-theme);
-        --cd-weight: 500;
-        --cd-size: clamp(34px, 3.4vw, 52px);
-        --cd-size-sm: 38px;
-        --cd-block-min: 0;
-        --cd-block-pad: 12px 16px;
-        --cd-block-bg: rgba(255, 255, 255, 0.035);
-        --cd-block-border: rgba(255, 255, 255, 0.06);
-        --cd-justify: flex-start;
-        --cd-gap-after: 20px;
-        --cd-date-opacity: 0.8;
+    .rule {
+        display: block;
+        width: 56px;
+        height: 1px;
+        margin: clamp(24px, 2.6vw, 36px) 0 clamp(18px, 2vw, 26px);
+        background: var(--gold);
+        opacity: 0.45;
+    }
+
+    /* Countdown set as type, not boxes: numbers in Fraunces, labels in small caps */
+    .timer :global(.countdown) {
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: clamp(14px, 1.6vw, 26px);
+        margin-bottom: 14px;
+    }
+
+    .timer :global(.time-block) {
+        align-items: flex-start;
+        min-width: 0;
+        padding: 0;
+        background: none;
+        border: 0;
+    }
+
+    .timer :global(.time-value) {
+        font-family: var(--font-theme);
+        font-weight: 500;
+        font-variation-settings: 'SOFT' 100, 'opsz' 72;
+        font-size: clamp(32px, 3vw, 48px);
+        letter-spacing: -0.01em;
+        color: var(--cream);
+    }
+
+    .timer :global(.time-label) {
+        margin-top: 6px;
+        font-size: 10px;
+        letter-spacing: 3px;
+        color: var(--text-dim);
+    }
+
+    .timer :global(.time-dot) {
+        align-self: flex-start;
+        padding: 0;
+        font-family: var(--font-theme);
+        font-size: clamp(32px, 3vw, 48px);
+        line-height: 1;
+        color: var(--gold-dim);
+    }
+
+    .timer :global(.target-date) {
+        margin: 0;
+        font-size: 11px;
+        letter-spacing: 3px;
+        color: var(--gold);
+        opacity: 0.85;
     }
 
     @keyframes fade-up {
@@ -411,29 +610,39 @@ import CountdownTimer from './CountdownTimer.astro';
             text-align: center;
         }
 
-        .poem {
-            margin-bottom: 8px;
-            font-size: clamp(20px, 5vw, 28px);
+        .poem,
+        .punch {
+            font-size: clamp(18px, 4.8vw, 26px);
         }
 
-        .details {
-            margin-top: 4px;
+        .poem {
+            margin-bottom: 4px;
         }
 
         .title {
             font-size: clamp(44px, 12vw, 84px);
-            margin-bottom: 28px;
         }
 
-        .timer {
-            text-align: center;
-            --cd-justify: center;
+        .rule {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .timer :global(.countdown) {
+            justify-content: center;
+        }
+
+        .timer :global(.time-block) {
+            align-items: center;
         }
     }
 
     @media (prefers-reduced-motion: reduce) {
-        .poem span,
-        .hint {
+        .scene {
+            transition: none;
+        }
+
+        .poem span {
             animation: none;
             opacity: 1;
         }
@@ -444,6 +653,15 @@ import CountdownTimer from './CountdownTimer.astro';
 
         .punch {
             transition: none;
+        }
+
+        .is-found .awake-lines path {
+            animation: none;
+            stroke-dashoffset: 0;
+        }
+
+        .is-found .awake-lines {
+            animation: none;
         }
     }
 </style>
