@@ -33,7 +33,6 @@ import CountdownTimer from './CountdownTimer.astro';
                 <path d="M 120 -94 L 154 -122" />
             </g>
         </svg>
-        <p class="hint" data-hint>Move the light around</p>
     </div>
 
     <p class="punch">…except for a baby.</p>
@@ -47,7 +46,16 @@ import CountdownTimer from './CountdownTimer.astro';
         <div class="timer">
             <CountdownTimer />
         </div>
+        <a href="#details" class="invite-cue">
+            View the invite
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v11M3.5 8.5 8 13l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="/hipster-holiday.ics" class="invite-cue calendar-cue">
+            Add to calendar
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="10" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3M8 8.5v3.5M6.25 10.25h3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </a>
     </div>
+
 </section>
 
 <script>
@@ -75,13 +83,9 @@ import CountdownTimer from './CountdownTimer.astro';
     const img = document.querySelector<HTMLImageElement>('[data-scene-img]');
     const fx = document.querySelector<HTMLElement>('[data-fx]');
     const awake = document.querySelector<SVGElement>('[data-awake]');
-    const hint = document.querySelector<HTMLElement>('[data-hint]');
 
     if (hero && scene && img && fx && awake) {
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (hint && window.matchMedia('(hover: none)').matches) {
-            hint.textContent = 'Drag the light around';
-        }
 
         // Map photo coordinates to scene pixels, honouring object-fit: cover + object-position
         let map = { scale: 1, ox: 0, oy: 0 };
@@ -169,7 +173,14 @@ import CountdownTimer from './CountdownTimer.astro';
             tourTimer = window.setTimeout(advanceTour, 1900);
 
             function onPoint(e: PointerEvent) {
-                if (!introDone) return;
+                if (!introDone) {
+                    // A resting mouse shouldn't cut the tour short, but a deliberate
+                    // touch, tap, or click-drag takes the light straight away.
+                    const hovering = e.type === 'pointermove' && e.pointerType === 'mouse' && e.buttons === 0;
+                    if (hovering) return;
+                    introDone = true;
+                    hero!.classList.add('is-ready');
+                }
                 const r = scene!.getBoundingClientRect();
                 target.x = e.clientX - r.left;
                 target.y = e.clientY - r.top;
@@ -309,6 +320,8 @@ import CountdownTimer from './CountdownTimer.astro';
         grid-area: scene;
         position: relative;
         overflow: hidden;
+        /* Dragging on the picture moves the light; the rest of the page still scrolls */
+        touch-action: none;
         /* Reach under the title column so the room fades into it rather than stopping at a seam */
         margin-left: calc(-1 * var(--bleed));
         -webkit-mask-image: linear-gradient(to right, transparent 0, rgba(0, 0, 0, 0.25) 14%, rgba(0, 0, 0, 0.7) 28%, #000 40%, #000 93%, transparent 100%);
@@ -484,32 +497,7 @@ import CountdownTimer from './CountdownTimer.astro';
         to   { transform: scale(1); }
     }
 
-    .hint {
-        position: absolute;
-        left: 50%;
-        bottom: 28px;
-        transform: translateX(-50%);
-        margin: 0;
-        padding: 8px 16px;
-        border-radius: 100px;
-        background: rgba(10, 7, 5, 0.55);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        font-family: var(--font-body);
-        font-size: 11px;
-        letter-spacing: 2.5px;
-        text-transform: uppercase;
-        color: var(--text-mid);
-        white-space: nowrap;
-        opacity: 0;
-        transition: opacity 0.6s ease;
-    }
 
-    /* Offered once the intro has landed on the baby, gone as soon as they take the light */
-    .is-ready:not(.is-driving) .hint {
-        opacity: 1;
-        transition-delay: 0.8s;
-    }
 
     /* ---------- the words: one voice ----------
        Fraunces italic carries the verse (cream, then gold for the punchline),
@@ -664,12 +652,17 @@ import CountdownTimer from './CountdownTimer.astro';
         color: var(--gold-dim);
     }
 
+    /* Gold is saved for the punchline, the year and the baby; the date reads in cream */
     .timer :global(.target-date) {
         margin: 0;
         font-size: 11px;
         letter-spacing: 3px;
-        color: var(--gold);
-        opacity: 0.85;
+        color: var(--verse);
+        opacity: 1;
+    }
+
+    .timer :global(.time-dot) {
+        color: rgba(237, 228, 212, 0.25);
     }
 
     @keyframes fade-up {
@@ -747,6 +740,289 @@ import CountdownTimer from './CountdownTimer.astro';
         }
     }
 
+    /* ---------- "View the invite" cue ---------- */
+
+    .invite-cue {
+        margin-top: 24px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 20px;
+        border-radius: 100px;
+        border: 1px solid rgba(237, 228, 212, 0.26);
+        background: rgba(10, 8, 6, 0.55);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        font-family: var(--font-body);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--cream);
+        text-decoration: none;
+        white-space: nowrap;
+        transition: border-color 0.25s ease, background 0.25s ease;
+    }
+
+    .invite-cue svg {
+        color: var(--verse);
+        animation: nudge 2.2s ease-in-out infinite;
+    }
+
+    .calendar-cue svg {
+        animation: none;
+    }
+
+    .invite-cue:hover,
+    .invite-cue:focus-visible {
+        border-color: var(--cream);
+        background: rgba(237, 228, 212, 0.08);
+    }
+
+    @keyframes nudge {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(3px); }
+    }
+
+    /* ==========================================================
+       Poster layout: the room fills the header, the verse and punchline
+       read together on top, the invite runs along the bottom.
+       (These come last so they override the defaults above.)
+       ========================================================== */
+
+    /* ---- phones: tighter crop, lighter room, smaller title ---- */
+    @media (max-width: 900px), (orientation: portrait) {
+        .hero26 {
+            --night: rgba(6, 4, 2, 0.8);
+            align-content: start;
+            padding: calc(var(--nav-h) + 20px) 0 96px;
+            row-gap: 0;
+        }
+
+        /* Tighter crop: cut the empty wall and sheet, keep the whole family */
+        .hero26 .scene {
+            aspect-ratio: 4 / 3;
+            max-width: 720px;
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
+                    mask-image: linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
+        }
+
+        .hero26 .scene-img {
+            object-position: 55% 60%;
+        }
+
+        .hero26 .title {
+            font-size: clamp(40px, 10.5vw, 60px);
+        }
+
+        .hero26 .title-kicker {
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .hero26 .rule {
+            margin: 20px auto 16px;
+        }
+
+    }
+
+    @media (min-width: 901px) and (orientation: landscape) {
+        .hero26 {
+            grid-template-columns: minmax(0, 1fr);
+            grid-template-rows: auto auto 1fr auto;
+            grid-template-areas:
+                "poem"
+                "punch"
+                "."
+                "details";
+        }
+
+        /* Zoomed out: a wide frame centred in the dark, fading out at the sides */
+        .hero26 .scene {
+            grid-area: 1 / 1 / -1 / -1;
+            justify-self: center;
+            width: min(100%, 100svh);
+            margin-left: 0;
+            -webkit-mask-image: linear-gradient(to right, transparent 0, #000 18%, #000 82%, transparent 100%);
+                    mask-image: linear-gradient(to right, transparent 0, #000 18%, #000 82%, transparent 100%);
+        }
+
+        .hero26 .scene-img {
+            object-position: 52% 46%;
+        }
+
+        /* dark band at the bottom for the title and countdown */
+        .hero26 .scene::after {
+            content: '';
+            position: absolute;
+            inset: auto 0 0 0;
+            height: 38%;
+            background: linear-gradient(to bottom, transparent, rgba(10, 8, 6, 0.9));
+            pointer-events: none;
+        }
+
+        .hero26 .poem {
+            grid-area: poem;
+            align-self: start;
+        }
+
+        .hero26 .punch {
+            grid-area: punch;
+            align-self: start;
+            padding-top: 6px;
+            padding-bottom: 0;
+            font-size: clamp(24px, 2.2vw, 36px);
+        }
+
+        .hero26 .details {
+            grid-area: details;
+            display: grid;
+            grid-template-columns: auto auto;
+            justify-content: space-between;
+            align-items: end;
+            gap: 32px;
+            padding: 0 clamp(32px, 5vw, 96px) clamp(40px, 7vh, 72px);
+        }
+
+        .hero26 .title {
+            font-size: clamp(44px, 4.6vw, 80px);
+        }
+
+        .hero26 .rule {
+            display: none;
+        }
+
+        /* The countdown mirrors the title: a small caps line (the date) over one big line (the numbers) */
+        /* "View the invite" sits left-aligned under the title */
+        .hero26 .invite-cue {
+            grid-column: 1;
+            grid-row: 2;
+            justify-self: start;
+            margin-top: 4px;
+        }
+
+        /* …and "Add to calendar" mirrors it, right-aligned under the countdown */
+        .hero26 .calendar-cue {
+            grid-column: 2;
+            justify-self: end;
+        }
+
+        .hero26 .timer {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: flex-end;
+            text-align: right;
+        }
+
+        .hero26 .timer :global(.target-date) {
+            margin: 0 0 clamp(10px, 1.1vw, 16px);
+            font-family: var(--font-theme);
+            font-weight: 600;
+            font-variation-settings: 'SOFT' 100, 'WONK' 0, 'opsz' 24;
+            font-size: clamp(13px, 1.05vw, 17px);
+            line-height: 1;
+            letter-spacing: 0.28em;
+            color: var(--verse);
+            opacity: 1;
+        }
+
+        .hero26 .timer :global(.countdown) {
+            justify-content: flex-end;
+            align-items: baseline;
+            gap: clamp(16px, 1.9vw, 30px);
+            margin: 0;
+        }
+
+        .hero26 .timer :global(.time-dot) {
+            display: none;
+        }
+
+        .hero26 .timer :global(.time-block) {
+            flex-direction: row;
+            align-items: baseline;
+            gap: 0.4em;
+        }
+
+        .hero26 .timer :global(.time-value) {
+            font-weight: 800;
+            font-variation-settings: 'SOFT' 100, 'opsz' 144;
+            font-size: clamp(32px, 3.3vw, 58px);
+            line-height: 0.95;
+            letter-spacing: -0.02em;
+        }
+
+        .hero26 .timer :global(.time-label) {
+            margin: 0;
+            font-family: var(--font-theme);
+            font-weight: 600;
+            font-variation-settings: 'SOFT' 100, 'WONK' 0, 'opsz' 24;
+            font-size: clamp(11px, 0.8vw, 13px);
+            letter-spacing: 0.2em;
+            color: var(--verse);
+        }
+    }
+
+    @media (max-width: 900px), (orientation: portrait) {
+        .hero26 {
+            grid-template-rows: auto auto auto auto;
+            grid-template-areas:
+                "poem"
+                "punch"
+                "scene"
+                "details";
+        }
+
+        /* Zoomed out so the whole family fits across the screen */
+        .hero26 .scene {
+            grid-area: scene;
+            max-width: none;
+            aspect-ratio: auto;
+            height: min(54svh, 100vw);
+            margin-top: 4px;
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 10%, #000 84%, transparent 100%);
+                    mask-image: linear-gradient(to bottom, transparent 0, #000 10%, #000 84%, transparent 100%);
+        }
+
+        .hero26 .scene-img {
+            object-position: 52% 54%;
+        }
+
+        .hero26 .poem {
+            grid-area: poem;
+        }
+
+        .hero26 .punch {
+            grid-area: punch;
+            margin: 4px 0 0;
+        }
+
+
+        .hero26 {
+            padding-bottom: 40px;
+        }
+
+        /* the two buttons sit side by side on phones */
+        .hero26 .invite-cue {
+            margin: 20px 2px 0;
+            padding: 10px 12px;
+            gap: 6px;
+            font-size: 10px;
+            letter-spacing: 1.1px;
+        }
+
+        .hero26 .details {
+            padding: 0 16px;
+        }
+
+        .hero26 .rule {
+            display: none;
+        }
+
+        .hero26 .timer {
+            margin-top: 16px;
+        }
+    }
+
     @media (prefers-reduced-motion: reduce) {
         .scene {
             transition: none;
@@ -757,9 +1033,6 @@ import CountdownTimer from './CountdownTimer.astro';
             opacity: 1;
         }
 
-        .hint {
-            display: none;
-        }
 
         .punch {
             transition: none;

@@ -9,7 +9,8 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 - `src/pages/index.astro` — one-page site: top nav, themed hero, details, RSVP, archive, footer
 - `src/pages/YYYY/index.astro` — yearly themed event pages
 - `src/components/` — shared components (TopNav, CountdownTimer, Countdown, EventDetails, RsvpForm, InviteGallery, SiteFooter) plus the current year's themed hero (`HeroYYYY.astro`)
-- `src/data/event.ts` — the upcoming party's copy (date, location, details) and the RSVP endpoint URL
+- `src/data/event.ts` — the upcoming party's copy (date, location, details), calendar start/end times, and the RSVP endpoint URL
+- `src/pages/hipster-holiday.ics.ts` — builds the "Add to calendar" file from `event.ts`
 - `scripts/rsvp-sheet.gs` — Google Apps Script that receives RSVPs into a Google Sheet (not part of the build)
 - `src/layouts/Base.astro` — shared layout (fonts, global styles, atmosphere)
 - `public/invites/` — invite images for gallery
@@ -22,7 +23,8 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 - Colors: `#0a0806` bg, `#bf3a2b` accent red, `#d4a853` gold, `#ede4d4` text
 - Warm radial glow for atmosphere (no film grain — it was removed)
 - Countdown targets the 2nd Friday of December at 6 PM MST dynamically
-- The landing hero is themed to the upcoming year (`Hero2026.astro`: dark bedroom, pointer-driven nightlight, reveal on the baby) and embeds `CountdownTimer`; `Countdown.astro` is the plain fallback hero
+- The landing hero is themed to the upcoming year (`Hero2026.astro`: dark bedroom, nightlight tour then pointer/touch control, reveal on the baby) and embeds `CountdownTimer`; `Countdown.astro` is the plain fallback hero
+- 2026 hero is a "poster": verse + punchline together on top, the room in the middle, title + countdown along the bottom with "View the invite" and "Add to calendar" buttons; gold is reserved for the punchline, the year, and the baby
 - Theme font for 2026 is Fraunces (`--font-theme`); the archive gallery holds past years only
 - Gallery is centered on the page with a floating timeline nav on the right that only shows while the archive is in view
 - Year labels sit to the left of each card, pulled out of flow to keep cards centered

@@ -7,6 +7,10 @@ export const event = {
     time: '6 PM',
     location: 'At the Spencer home',
 
+    // For the "Add to calendar" file: 6–11 PM Mountain time, written in UTC
+    startUtc: '2026-12-12T01:00:00Z',
+    endUtc: '2026-12-12T06:00:00Z',
+
     details: [
         {
             label: 'When',

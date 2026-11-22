@@ -33,6 +33,7 @@ Responses appear in an `RSVPs` tab. If you change the script later, use **Deploy
 
 - `src/pages/index.astro` — the one-page site (nav, header, details, RSVP, archive, footer)
 - `src/data/event.ts` — this year's party details and the RSVP endpoint
+- `src/pages/hipster-holiday.ics.ts` — the "Add to calendar" file, built from `event.ts`
 - `scripts/rsvp-sheet.gs` — Google Apps Script that saves RSVPs to a Google Sheet
 - `src/pages/YYYY/index.astro` — yearly themed event pages
 - `src/components/Hero2026.astro` — this year's interactive themed header
