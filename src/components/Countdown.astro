@@ -1,6 +1,8 @@
 ---
 // The home page's header: the countdown to the next party, plus a way into
-// this year's invite and down to the archive.
+// this year's invite and down to the archive. Set in the invite's type
+// (Fraunces title, the countdown as type rather than boxes) so home and the
+// invite read as one site.
 import CountdownTimer from './CountdownTimer.astro';
 
 interface Props {
@@ -9,24 +11,17 @@ interface Props {
 const { invite } = Astro.props;
 ---
 <div class="countdown-hero" id="countdown-hero">
-    <div class="hero-border-top"></div>
-
     <div class="countdown-inner">
-        <p class="overline">The Spencer Family’s</p>
-        <h1 class="brand-title">
-            <span class="title-top">Hipster</span>
-            <span class="title-bottom">Holiday</span>
+        <h1 class="title">
+            <span class="kicker">The Spencer Family’s</span>
+            Hipster <em class="accent">Holiday{invite && <>{' '}{invite.year}</>}</em>
         </h1>
 
-        <div class="ornament">
-            <span class="orn-line"></span>
-            <svg class="orn-star" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M7 0L8.5 5.5L14 7L8.5 8.5L7 14L5.5 8.5L0 7L5.5 5.5L7 0Z" fill="currentColor"/>
-            </svg>
-            <span class="orn-line"></span>
-        </div>
+        <span class="rule" aria-hidden="true"></span>
 
-        <CountdownTimer />
+        <div class="timer">
+            <CountdownTimer />
+        </div>
 
         {invite && (
             <nav class="ways" aria-label="Where to next">
@@ -41,17 +36,13 @@ const { invite } = Astro.props;
             </nav>
         )}
     </div>
-
-    {!invite && (
-        <div class="scroll-cue">
-            <div class="scroll-line"></div>
-        </div>
-    )}
 </div>
 
 <style>
     .countdown-hero {
+        --verse: rgba(237, 228, 212, 0.72);
         min-height: 100vh;
+        min-height: 100svh;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -59,75 +50,119 @@ const { invite } = Astro.props;
         z-index: 1;
     }
 
-    .hero-border-top {
-        position: absolute;
-        top: 0;
-        left: 10%;
-        right: 10%;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
-    }
-
     .countdown-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
-        padding: 48px 32px;
-        max-width: 900px;
+        padding: calc(var(--nav-h) + 32px) 32px 48px;
+        max-width: 1240px;
         width: 100%;
     }
 
-    .overline {
-        font-family: var(--font-body);
-        font-weight: 300;
-        font-size: 12px;
-        letter-spacing: 5px;
-        text-transform: uppercase;
-        color: var(--gold);
-        margin-bottom: 40px;
+    /* Same title as the invite: kicker in small caps, then the name in heavy soft Fraunces */
+    .title {
+        margin: 0;
+        font-family: var(--font-theme);
+        font-weight: 800;
+        font-variation-settings: 'SOFT' 100, 'WONK' 0, 'opsz' 144;
+        font-size: clamp(52px, 7.2vw, 116px);
+        line-height: 0.95;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        text-wrap: balance;
     }
 
-    .brand-title {
-        font-family: var(--font-display);
-        font-weight: 300;
-        line-height: 0.85;
-        margin-bottom: 36px;
-    }
-
-    .title-top {
+    .kicker {
         display: block;
-        font-size: clamp(72px, 14vw, 160px);
-        letter-spacing: 0.04em;
+        margin-bottom: clamp(14px, 1.4vw, 20px);
+        font-weight: 600;
+        font-variation-settings: 'SOFT' 100, 'WONK' 0, 'opsz' 24;
+        font-size: clamp(13px, 1.1vw, 17px);
+        line-height: 1;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--verse);
+    }
+
+    /* Like the original home title: "Holiday" (and the year) in a red italic */
+    .accent {
+        font-style: italic;
+        font-weight: 700;
+        font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 144;
+        color: var(--gold);
+        /* The italic leans past its box; give the last figure room */
+        padding-right: 0.04em;
+    }
+
+    .rule {
+        display: block;
+        width: 56px;
+        height: 1px;
+        margin: clamp(32px, 3.4vw, 48px) 0 clamp(24px, 2.6vw, 36px);
+        background: var(--gold);
+        opacity: 0.55;
+    }
+
+    /* The countdown as type, like the invite: date in small caps above,
+       big Fraunces numbers with their units beside them */
+    .timer {
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+    }
+
+    .timer :global(.target-date) {
+        margin: 0 0 clamp(14px, 1.4vw, 20px);
+        font-family: var(--font-theme);
+        font-weight: 600;
+        font-variation-settings: 'SOFT' 100, 'WONK' 0, 'opsz' 24;
+        font-size: clamp(12px, 1vw, 15px);
+        line-height: 1;
+        letter-spacing: 0.28em;
+        color: var(--verse);
+        opacity: 1;
+    }
+
+    .timer :global(.countdown) {
+        justify-content: center;
+        align-items: baseline;
+        gap: clamp(18px, 2.4vw, 36px);
+        margin: 0;
+    }
+
+    .timer :global(.time-dot) {
+        display: none;
+    }
+
+    .timer :global(.time-block) {
+        flex-direction: row;
+        align-items: baseline;
+        gap: 0.4em;
+        min-width: 0;
+        padding: 0;
+        background: none;
+        border: 0;
+    }
+
+    .timer :global(.time-value) {
+        font-family: var(--font-theme);
+        font-weight: 800;
+        font-variation-settings: 'SOFT' 100, 'opsz' 144;
+        font-size: clamp(40px, 4.6vw, 68px);
+        line-height: 0.95;
+        letter-spacing: -0.02em;
         color: var(--text-primary);
     }
 
-    .title-bottom {
-        display: block;
-        font-size: clamp(72px, 14vw, 160px);
-        font-style: italic;
+    .timer :global(.time-label) {
+        margin: 0;
+        font-family: var(--font-theme);
         font-weight: 600;
-        color: var(--accent);
-        margin-top: -0.05em;
-    }
-
-    .ornament {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 20px;
-        margin-bottom: 48px;
-    }
-
-    .orn-line {
-        display: block;
-        width: 80px;
-        height: 1px;
-        background: var(--gold);
-        opacity: 0.3;
-    }
-
-    .orn-star {
-        color: var(--gold);
-        opacity: 0.6;
-        flex-shrink: 0;
+        font-variation-settings: 'SOFT' 100, 'WONK' 0, 'opsz' 24;
+        font-size: clamp(11px, 0.85vw, 13px);
+        letter-spacing: 0.2em;
+        color: var(--verse);
     }
 
     .ways {
@@ -135,7 +170,7 @@ const { invite } = Astro.props;
         justify-content: center;
         flex-wrap: wrap;
         gap: 14px;
-        margin-top: 56px;
+        margin-top: clamp(44px, 5vw, 64px);
     }
 
     .way {
@@ -174,55 +209,42 @@ const { invite } = Astro.props;
         border-color: var(--gold-hover);
     }
 
-    .scroll-cue {
-        position: absolute;
-        bottom: 48px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
-    .scroll-line {
-        width: 1px;
-        height: 40px;
-        background: linear-gradient(to bottom, var(--gold), transparent);
-        opacity: 0.25;
-        animation: pulse 2.5s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-        0%, 100% { opacity: 0.15; }
-        50% { opacity: 0.4; }
-    }
-
     @media (max-width: 600px) {
         .countdown-inner {
-            padding: 32px 20px;
+            padding: calc(var(--nav-h) + 24px) 20px 40px;
         }
 
-        .overline {
+        .title {
+            font-size: clamp(44px, 13vw, 64px);
+        }
+
+        .timer :global(.countdown) {
+            gap: 16px;
+        }
+
+        .timer :global(.time-block) {
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer :global(.time-value) {
+            font-size: clamp(36px, 11vw, 48px);
+        }
+
+        .timer :global(.time-label) {
             font-size: 10px;
-            letter-spacing: 4px;
-            margin-bottom: 28px;
-        }
-
-        .orn-line {
-            width: 40px;
         }
 
         .ways {
             flex-direction: column;
             align-items: stretch;
+            width: 100%;
             max-width: 300px;
-            margin: 44px auto 0;
         }
 
         .way {
             justify-content: center;
-        }
-
-        .hero-border-top {
-            left: 5%;
-            right: 5%;
         }
     }
 </style>

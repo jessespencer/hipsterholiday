@@ -68,9 +68,10 @@ const invite = `/${event.year}/`;
     }
 
     .title {
-        font-family: var(--font-display);
+        font-family: var(--font-theme);
         font-weight: 400;
         font-style: italic;
+        font-variation-settings: 'SOFT' 100, 'opsz' 48;
         font-size: 32px;
         letter-spacing: 0.02em;
         color: var(--text-primary);
@@ -128,10 +129,12 @@ const invite = `/${event.year}/`;
     }
 
     .heading {
-        font-family: var(--font-display);
-        font-weight: 400;
-        font-size: clamp(44px, 5vw, 64px);
-        line-height: 0.98;
+        font-family: var(--font-theme);
+        font-weight: 800;
+        font-variation-settings: 'SOFT' 100, 'opsz' 96;
+        font-size: clamp(40px, 4.4vw, 58px);
+        line-height: 1;
+        letter-spacing: -0.02em;
         color: var(--text-primary);
         margin-bottom: 22px;
     }
