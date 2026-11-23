@@ -11,7 +11,7 @@ const onHome = path === '/';
 const shortYear = `’${String(event.year).slice(-2)}`;
 ---
 <header class="topnav" data-topnav>
-    <a href="/" class="brand" aria-label="Hipster Holiday: home"><span class="brand-full">Hipster Holiday</span><span class="brand-short" aria-hidden="true">HH</span></a>
+    <a href="/" class="brand" aria-label="Hipster Holiday: home"><span class="brand-full">Hipster <em class="brand-accent">Holiday</em></span><span class="brand-short" aria-hidden="true">H<em class="brand-accent">H</em></span></a>
     <nav class="links" aria-label="Site">
         <a href={invite} class="link this-year" aria-current={onInvite ? 'page' : undefined} data-watch={onHome ? 'this-year' : undefined} aria-label={`This year: ${event.year}`}>
             <span class="this-label">This Year</span>
@@ -76,6 +76,13 @@ const shortYear = `’${String(event.year).slice(-2)}`;
         color: var(--text-primary, #ede4d4);
         text-decoration: none;
         white-space: nowrap;
+    }
+
+    /* The logo, same on every page: "Holiday" in the site's red italic */
+    .brand-accent {
+        font-style: italic;
+        font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 24;
+        color: var(--accent, #bf3a2b);
     }
 
     .links {
