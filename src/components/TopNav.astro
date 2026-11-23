@@ -14,7 +14,7 @@ const shortYear = `’${String(event.year).slice(-2)}`;
     <a href="/" class="brand" aria-label="Hipster Holiday: home"><span class="brand-full">Hipster Holiday</span><span class="brand-short" aria-hidden="true">HH</span></a>
     <nav class="links" aria-label="Site">
         <a href={invite} class="link this-year" aria-current={onInvite ? 'page' : undefined} aria-label={`This year: ${event.year}`}>
-            <span class="twinkle" aria-hidden="true">✦</span>
+            <svg class="twinkle" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 0L8.5 5.5L14 7L8.5 8.5L7 14L5.5 8.5L0 7L5.5 5.5Z" /></svg>
             <span class="this-label">This Year</span>
             <span class="yr" aria-hidden="true">{shortYear}</span>
             <span class="yr-full" aria-hidden="true">{event.year}</span>
@@ -123,12 +123,23 @@ const shortYear = `’${String(event.year).slice(-2)}`;
         transform: scaleX(1);
     }
 
-    /* This year's party: a twinkling star, the label, and the year as a little accent badge */
+    /* This year's party: a star, the label, and the year as a small accent badge,
+       all centred on one line and sized to the label's capitals */
     .this-year {
         display: inline-flex;
-        align-items: baseline;
-        gap: 7px;
+        align-items: center;
+        gap: 8px;
         white-space: nowrap;
+    }
+
+    .this-year > * {
+        line-height: 1;
+        text-box: trim-both cap alphabetic;
+    }
+
+    /* Letter-spacing trails the last letter; trim it so both gaps match */
+    .this-label {
+        margin-right: -2.5px;
     }
 
     .yr-full,
@@ -136,27 +147,28 @@ const shortYear = `’${String(event.year).slice(-2)}`;
         display: none;
     }
 
+    /* The star keeps its shape; only a soft glow breathes behind it */
     .twinkle {
-        display: inline-block;
-        font-size: 12px;
-        letter-spacing: 0;
-        color: var(--gold, #d4a853);
-        text-shadow: 0 0 8px color-mix(in srgb, var(--gold, #d4a853) 70%, transparent);
-        animation: nav-twinkle 2.6s ease-in-out infinite;
+        flex: none;
+        width: 9px;
+        height: 9px;
+        fill: var(--gold, #d4a853);
+        filter: drop-shadow(0 0 2px color-mix(in srgb, var(--gold, #d4a853) 60%, transparent));
+        animation: nav-glow 2.8s ease-in-out infinite;
     }
 
-    @keyframes nav-twinkle {
-        0%, 100% { opacity: 0.55; transform: scale(0.85) rotate(0deg); }
-        45% { opacity: 1; transform: scale(1.15) rotate(45deg); }
+    @keyframes nav-glow {
+        0%, 100% { filter: drop-shadow(0 0 2px color-mix(in srgb, var(--gold, #d4a853) 45%, transparent)); }
+        50% { filter: drop-shadow(0 0 6px var(--gold, #d4a853)); }
     }
 
     .yr {
         font-family: var(--font-theme, 'Fraunces', Georgia, serif);
         font-style: italic;
         font-weight: 700;
-        font-variation-settings: 'SOFT' 100, 'opsz' 24;
-        font-size: 13px;
-        letter-spacing: 0;
+        font-variation-settings: 'SOFT' 100, 'opsz' 14;
+        font-size: 12px;
+        letter-spacing: 0.02em;
         text-transform: none;
         color: var(--gold, #d4a853);
     }
@@ -164,14 +176,13 @@ const shortYear = `’${String(event.year).slice(-2)}`;
     /* Keeps this year apart from the archive */
     .divider {
         width: 1px;
-        height: 16px;
+        height: 14px;
         background: color-mix(in srgb, var(--text-primary, #ede4d4) 22%, transparent);
     }
 
     @media (prefers-reduced-motion: reduce) {
         .twinkle {
             animation: none;
-            opacity: 1;
         }
     }
 
@@ -224,13 +235,18 @@ const shortYear = `’${String(event.year).slice(-2)}`;
             font-style: italic;
             font-weight: 700;
             font-variation-settings: 'SOFT' 100, 'opsz' 24;
-            font-size: 15px;
-            letter-spacing: 0;
+            font-size: 14px;
+            letter-spacing: 0.01em;
             color: var(--text-primary, #ede4d4);
         }
 
         .this-year {
-            gap: 5px;
+            gap: 6px;
+        }
+
+        .twinkle {
+            width: 8px;
+            height: 8px;
         }
     }
 
