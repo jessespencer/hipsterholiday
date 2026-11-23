@@ -32,7 +32,7 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 - Year labels sit to the left of each card, pulled out of flow to keep cards centered
 - Never publish the home address: the site says "At the Spencer home" and guests get the address another way
 - RSVPs post (no-cors) to a Google Apps Script web app; with no `RSVP_ENDPOINT` set the form says RSVPs aren't open yet
-- Every page (home, the invite page, 2025) shares one `TopNav` of fixed landmarks: brand → home ("HH" on the smallest phones), a twinkling "✦ This Year ’YY" (just "✦ YYYY" on phones) → the invite page, a divider, Archive → `/#archive`, RSVP → the invite page's form; an accent underline marks the current place. Labels come from `event.ts`, so the nav needs no props
+- Every page (home, the invite page, 2025) shares one `TopNav` of fixed landmarks: brand → home ("HH" on the smallest phones), "This Year ’YY" (just "YYYY" on phones) → the invite page, a divider, Archive → `/#archive`, RSVP → the invite page's form; an accent underline marks the current place. Labels come from `event.ts`, so the nav needs no props
 
 ## Yearly Workflow
 

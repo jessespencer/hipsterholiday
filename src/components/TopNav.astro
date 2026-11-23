@@ -14,7 +14,6 @@ const shortYear = `’${String(event.year).slice(-2)}`;
     <a href="/" class="brand" aria-label="Hipster Holiday: home"><span class="brand-full">Hipster Holiday</span><span class="brand-short" aria-hidden="true">HH</span></a>
     <nav class="links" aria-label="Site">
         <a href={invite} class="link this-year" aria-current={onInvite ? 'page' : undefined} aria-label={`This year: ${event.year}`}>
-            <svg class="twinkle" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 0L8.5 5.5L14 7L8.5 8.5L7 14L5.5 8.5L0 7L5.5 5.5Z" /></svg>
             <span class="this-label">This Year</span>
             <span class="yr" aria-hidden="true">{shortYear}</span>
             <span class="yr-full" aria-hidden="true">{event.year}</span>
@@ -123,8 +122,8 @@ const shortYear = `’${String(event.year).slice(-2)}`;
         transform: scaleX(1);
     }
 
-    /* This year's party: a star, the label, and the year as a small accent badge,
-       all centred on one line and sized to the label's capitals */
+    /* This year's party: the label and the year as a small accent badge,
+       centred on one line and sized to the label's capitals */
     .this-year {
         display: inline-flex;
         align-items: center;
@@ -147,21 +146,6 @@ const shortYear = `’${String(event.year).slice(-2)}`;
         display: none;
     }
 
-    /* The star keeps its shape; only a soft glow breathes behind it */
-    .twinkle {
-        flex: none;
-        width: 9px;
-        height: 9px;
-        fill: var(--gold, #d4a853);
-        filter: drop-shadow(0 0 2px color-mix(in srgb, var(--gold, #d4a853) 60%, transparent));
-        animation: nav-glow 2.8s ease-in-out infinite;
-    }
-
-    @keyframes nav-glow {
-        0%, 100% { filter: drop-shadow(0 0 2px color-mix(in srgb, var(--gold, #d4a853) 45%, transparent)); }
-        50% { filter: drop-shadow(0 0 6px var(--gold, #d4a853)); }
-    }
-
     .yr {
         font-family: var(--font-theme, 'Fraunces', Georgia, serif);
         font-style: italic;
@@ -178,12 +162,6 @@ const shortYear = `’${String(event.year).slice(-2)}`;
         width: 1px;
         height: 14px;
         background: color-mix(in srgb, var(--text-primary, #ede4d4) 22%, transparent);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .twinkle {
-            animation: none;
-        }
     }
 
     .link-cta {
@@ -223,7 +201,7 @@ const shortYear = `’${String(event.year).slice(-2)}`;
             gap: 12px;
         }
 
-        /* Phones: "This Year '26" becomes a twinkling year */
+        /* Phones: "This Year '26" becomes just the year */
         .this-label,
         .yr {
             display: none;
@@ -242,11 +220,6 @@ const shortYear = `’${String(event.year).slice(-2)}`;
 
         .this-year {
             gap: 6px;
-        }
-
-        .twinkle {
-            width: 8px;
-            height: 8px;
         }
     }
 
