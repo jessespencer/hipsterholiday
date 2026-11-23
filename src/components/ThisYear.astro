@@ -1,0 +1,236 @@
+---
+// Home's "This Year" feature: the upcoming party's invite, kept apart from the
+// archive so it reads as what's happening now, not a past year.
+import { event } from '../data/event';
+
+const invite = `/${event.year}/`;
+---
+<section class="this-year" id="this-year" aria-labelledby="this-year-title">
+    <div class="header">
+        <span class="rule" aria-hidden="true"></span>
+        <h2 class="title" id="this-year-title">This Year</h2>
+        <span class="rule" aria-hidden="true"></span>
+    </div>
+
+    <div class="feature">
+        <a href={invite} class="poster" aria-label={`Open the ${event.year} invite`}>
+            <img
+                src={`/invites/hipster-holiday-${event.year}.jpg`}
+                alt={`The ${event.year} invite: the family asleep on the bed while the baby is wide awake`}
+                width="1080"
+                height="1350"
+                loading="lazy"
+            />
+        </a>
+
+        <div class="copy">
+            <p class="when">{event.date} · {event.time}</p>
+            <h3 class="heading">Pajamas on,<br />cookies out.</h3>
+            <p class="lede">
+                The {event.year} invite is out. Come see who’s still awake, then save
+                yourself a spot by the cookies.
+            </p>
+            <div class="actions">
+                <a href={invite} class="btn btn-main">
+                    Open the invite
+                    <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2 8h11M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+                <a href={`${invite}#rsvp`} class="btn">RSVP</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .this-year {
+        position: relative;
+        z-index: 1;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 72px 32px 40px;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        margin-bottom: 64px;
+    }
+
+    .rule {
+        display: block;
+        flex: 1;
+        max-width: 120px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        opacity: 0.5;
+    }
+
+    .title {
+        font-family: var(--font-display);
+        font-weight: 400;
+        font-style: italic;
+        font-size: 32px;
+        letter-spacing: 0.02em;
+        color: var(--text-primary);
+    }
+
+    .feature {
+        display: grid;
+        grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+        gap: clamp(40px, 6vw, 88px);
+        align-items: center;
+        justify-content: center;
+        max-width: 960px;
+        margin: 0 auto;
+    }
+
+    /* The poster is the star: a warm glow behind it so it reads as "now", not archived */
+    .poster {
+        position: relative;
+        display: block;
+        border-radius: 12px;
+        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .poster::before {
+        content: '';
+        position: absolute;
+        inset: -8%;
+        z-index: -1;
+        border-radius: 50%;
+        background: radial-gradient(closest-side, color-mix(in srgb, var(--gold) 22%, transparent), transparent);
+        filter: blur(20px);
+    }
+
+    .poster img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+    }
+
+    .poster:hover,
+    .poster:focus-visible {
+        transform: translateY(-4px) rotate(-0.6deg);
+    }
+
+    .when {
+        font-family: var(--font-body);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 18px;
+    }
+
+    .heading {
+        font-family: var(--font-display);
+        font-weight: 400;
+        font-size: clamp(44px, 5vw, 64px);
+        line-height: 0.98;
+        color: var(--text-primary);
+        margin-bottom: 22px;
+    }
+
+    .lede {
+        font-family: var(--font-body);
+        font-weight: 300;
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--text-mid);
+        max-width: 34ch;
+        margin-bottom: 32px;
+    }
+
+    .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 14px 24px;
+        border-radius: 100px;
+        border: 1px solid rgba(237, 228, 212, 0.22);
+        font-family: var(--font-body);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: border-color 0.25s ease, background 0.25s ease;
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+        border-color: rgba(237, 228, 212, 0.5);
+        background: rgba(237, 228, 212, 0.06);
+    }
+
+    .btn-main {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: var(--on-gold);
+        font-weight: 600;
+    }
+
+    .btn-main:hover,
+    .btn-main:focus-visible {
+        background: var(--gold-hover);
+        border-color: var(--gold-hover);
+    }
+
+    @media (max-width: 768px) {
+        .this-year {
+            padding: 56px 20px 24px;
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-size: 26px;
+        }
+
+        .feature {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 36px;
+            text-align: center;
+        }
+
+        .poster {
+            width: min(100%, 360px);
+            margin: 0 auto;
+        }
+
+        .lede {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .actions {
+            justify-content: center;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .poster {
+            transition: none;
+        }
+
+        .poster:hover,
+        .poster:focus-visible {
+            transform: none;
+        }
+    }
+</style>

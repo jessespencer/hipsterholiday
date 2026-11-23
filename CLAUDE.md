@@ -6,7 +6,7 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 
 ## Structure
 
-- `src/pages/index.astro` — home: top nav, `Countdown` hero with a button into this year's invite, archive, footer
+- `src/pages/index.astro` — home: top nav, `Countdown` hero with a button into this year's invite, the "This Year" feature, archive of past years, footer
 - `src/pages/YYYY/index.astro` — yearly invite pages; the current year's (`/2026/`) is the link texted to guests: themed hero, details, RSVP
 - `src/components/` — shared components (TopNav, CountdownTimer, Countdown, EventDetails, RsvpForm, InviteGallery, SiteFooter) plus the current year's themed hero (`HeroYYYY.astro`)
 - `src/data/event.ts` — the upcoming party's copy (date, location, details), calendar start/end times, and the RSVP endpoint URL
@@ -26,7 +26,7 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 - The invite page's hero is themed to the year (`Hero2026.astro`: dark bedroom, nightlight tour then pointer/touch control, reveal on the baby; under Reduce Motion the light fades between stops) and embeds `CountdownTimer`; `Countdown.astro` is the home page's plain hero
 - Home's link preview is `public/og-home.jpg`; the invite page passes its own
 - 2026 hero is a "poster": verse + punchline together on top, the room in the middle, title + countdown along the bottom with "View the invite" and "Add to calendar" buttons; gold is reserved for the punchline, the year, and the baby
-- Theme font for 2026 is Fraunces (`--font-theme`); the archive on home leads with the current year, whose card links to its invite page
+- Theme font for 2026 is Fraunces (`--font-theme`); home features the current year's invite in its own "This Year" section (`ThisYear.astro`), and the archive below holds past years only
 - One accent per page: home runs on red (`<Base accent="red">` swaps the gold tokens), themed invite pages keep their own (gold for 2026)
 - Gallery is centered on the page with a floating timeline nav on the right that only shows while the archive is in view
 - Year labels sit to the left of each card, pulled out of flow to keep cards centered
@@ -39,4 +39,4 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 1. Create `src/pages/YYYY/index.astro` + `public/YYYY/assets/`
 2. Build the year's themed hero (`src/components/HeroYYYY.astro`, keep `id="countdown-hero"` and use `CountdownTimer`) and render it in `src/pages/YYYY/index.astro` with the details, RSVP and a `YYYY/hipster-holiday.ics.ts`; save the invite to `public/invites/`
 3. Update `src/data/event.ts` (year, date, details copy; home links to `/{year}/` from it) and start a fresh RSVP sheet tab if wanted
-4. Add the year (with `link: "/YYYY/"`) to the top of the `invites` array in `InviteGallery.astro` once its invite is ready
+4. After the event, add that year (with `link: "/YYYY/"`) to the top of the `invites` array in `InviteGallery.astro` so it moves from "This Year" into the archive

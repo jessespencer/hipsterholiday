@@ -13,13 +13,13 @@ const shortYear = `’${String(event.year).slice(-2)}`;
 <header class="topnav" data-topnav>
     <a href="/" class="brand" aria-label="Hipster Holiday: home"><span class="brand-full">Hipster Holiday</span><span class="brand-short" aria-hidden="true">HH</span></a>
     <nav class="links" aria-label="Site">
-        <a href={invite} class="link this-year" aria-current={onInvite ? 'page' : undefined} aria-label={`This year: ${event.year}`}>
+        <a href={invite} class="link this-year" aria-current={onInvite ? 'page' : undefined} data-watch={onHome ? 'this-year' : undefined} aria-label={`This year: ${event.year}`}>
             <span class="this-label">This Year</span>
             <span class="yr" aria-hidden="true">{shortYear}</span>
             <span class="yr-full" aria-hidden="true">{event.year}</span>
         </a>
         <span class="divider" aria-hidden="true"></span>
-        <a href="/#archive" class="link" data-archive-link={onHome ? '' : undefined}>Archive</a>
+        <a href="/#archive" class="link" data-watch={onHome ? 'archive' : undefined}>Archive</a>
         <a href={`${invite}#rsvp`} class="link link-cta">RSVP</a>
     </nav>
 </header>
@@ -32,14 +32,14 @@ const shortYear = `’${String(event.year).slice(-2)}`;
         update();
     }
 
-    // On home, "Archive" is marked while the archive is on screen
-    const archiveLink = document.querySelector<HTMLElement>('[data-archive-link]');
-    const archive = document.getElementById('archive');
-    if (archiveLink && archive) {
+    // On home, "This Year" and "Archive" are marked while their sections are on screen
+    document.querySelectorAll<HTMLElement>('[data-watch]').forEach((link) => {
+        const section = document.getElementById(link.dataset.watch!);
+        if (!section) return;
         new IntersectionObserver(([entry]) => {
-            archiveLink.classList.toggle('is-here', entry.isIntersecting);
-        }, { rootMargin: '-45% 0px -45% 0px' }).observe(archive);
-    }
+            link.classList.toggle('is-here', entry.isIntersecting);
+        }, { rootMargin: '-45% 0px -45% 0px' }).observe(section);
+    });
 </script>
 
 <style>
