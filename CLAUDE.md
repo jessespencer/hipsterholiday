@@ -12,6 +12,8 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 - `src/data/event.ts` — the upcoming party's copy (date, location, details), calendar start/end times, and the RSVP endpoint URL
 - `src/pages/2026/hipster-holiday.ics.ts` — builds the "Add to calendar" file from `event.ts`
 - `scripts/rsvp-sheet.gs` — Google Apps Script that receives RSVPs into a Google Sheet (not part of the build)
+- `src/components/forest/` — the 2025 page's scroll-parallax poster (React island): `layers.ts` holds plane order, depths and motion defaults; `sceneData.ts` is generated; open `/2025/?debug` under `astro dev` for the tuning panel
+- `scripts/parallax-2025/` — source art and `build_layers.py`, which writes the planes to `public/2025/assets/parallax/` (needs Python 3.12 + numpy, pillow, opencv-python-headless; not part of the build)
 - `src/layouts/Base.astro` — shared layout (fonts, global styles, atmosphere)
 - `public/invites/` — invite images for gallery
 - `public/YYYY/assets/` — year-specific static assets
