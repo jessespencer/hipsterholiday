@@ -58,6 +58,10 @@ const shortYear = `’${String(event.year).slice(-2)}`;
         padding: 0 clamp(16px, 4vw, 48px);
         border-bottom: 1px solid transparent;
         transition: background 0.35s ease, border-color 0.35s ease, backdrop-filter 0.35s ease;
+        /* Base turns this on site-wide; set it here too so the nav renders at the
+           same weight on pages without Base (2025) */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     .topnav.is-scrolled {
