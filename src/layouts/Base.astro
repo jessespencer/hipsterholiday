@@ -5,8 +5,6 @@ interface Props {
     /** Link-preview image, relative to the site root (1200×630) */
     image?: string;
     imageAlt?: string;
-    /** The page's one accent color: gold (themed invite pages) or red (home) */
-    accent?: 'gold' | 'red';
 }
 
 const {
@@ -14,12 +12,11 @@ const {
     description = 'The countdown is on. The 2nd Friday of December. Every year.',
     image = '/og-home.jpg',
     imageAlt = 'The Spencer Family’s Hipster Holiday: the 2nd Friday of December, since 2016',
-    accent = 'gold',
 } = Astro.props;
 const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
 ---
 <!DOCTYPE html>
-<html lang="en" data-accent={accent}>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,11 +54,14 @@ const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
         --bg-card: #151210;
         --accent: #bf3a2b;
         --accent-glow: rgba(191, 58, 43, 0.15);
+        /* The site's one accent, every page: gold for 2026, to match the photo's warm light.
+           Components use these tokens for "the accent", so a new year's color changes here. */
         --gold: #d4a853;
         --gold-dim: rgba(212, 168, 83, 0.4);
         --gold-hover: #e2bb6c;
         /* Text on a solid accent button */
         --on-gold: #1a120b;
+        --cd-date-opacity: 0.9;
         --cream: #f2e8d5;
         --text-primary: #ede4d4;
         --text-dim: rgba(237, 228, 212, 0.35);
@@ -72,15 +72,6 @@ const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
         --nav-h: 64px;
     }
 
-    /* Home runs on red alone, to match its title and the light invite poster.
-       Components use the gold tokens for "the accent", so swapping them here is enough. */
-    :root[data-accent='red'] {
-        --gold: var(--accent);
-        --gold-dim: rgba(191, 58, 43, 0.45);
-        --gold-hover: #d4493a;
-        --on-gold: #fbf3e6;
-        --cd-date-opacity: 0.9;
-    }
 
     * {
         margin: 0;
@@ -113,13 +104,13 @@ const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
         pointer-events: none;
         z-index: 0;
         background:
-            radial-gradient(ellipse 60% 50% at 50% 40%, rgba(191, 58, 43, 0.07) 0%, transparent 70%),
+            radial-gradient(ellipse 60% 50% at 50% 40%, rgba(212, 168, 83, 0.06) 0%, transparent 70%),
             radial-gradient(ellipse 80% 60% at 30% 20%, rgba(212, 168, 83, 0.04) 0%, transparent 60%),
-            radial-gradient(ellipse 50% 40% at 70% 80%, rgba(191, 58, 43, 0.03) 0%, transparent 50%);
+            radial-gradient(ellipse 50% 40% at 70% 80%, rgba(212, 168, 83, 0.03) 0%, transparent 50%);
     }
 
 ::selection {
-        background: var(--accent);
-        color: var(--cream);
+        background: var(--gold);
+        color: var(--on-gold);
     }
 </style>

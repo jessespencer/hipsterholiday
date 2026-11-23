@@ -20,19 +20,19 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 ## Design
 
 - Fonts: Cormorant Garamond (display) + Outfit (body)
-- Colors: `#0a0806` bg, `#bf3a2b` accent red, `#d4a853` gold, `#ede4d4` text
+- Colors: `#0a0806` bg, `#ede4d4` text, and one accent across the whole site, set in `Base.astro` (`--gold`, `#d4a853` for 2026, to match the photo's warm light). Images on cream (the light poster) use a deeper gold, `#a9782a`, so it stays readable
 - Warm radial glow for atmosphere (no film grain — it was removed)
 - Countdown targets the 2nd Friday of December at 6 PM MST dynamically
-- The invite page's hero is themed to the year (`Hero2026.astro`: dark bedroom, nightlight tour then pointer/touch control, reveal on the baby; under Reduce Motion the light fades between stops) and embeds `CountdownTimer`; `Countdown.astro` is the home page's hero, set in the invite's Fraunces: "Hipster" over italic "Holiday {year}" on its own line, with only the year in the accent, and the boxed countdown with Fraunces numbers; home's section headings use Fraunces too
+- The invite page's hero is themed to the year (`Hero2026.astro`: dark bedroom, nightlight tour then pointer/touch control, reveal on the baby; under Reduce Motion the light fades between stops) and embeds `CountdownTimer`; `Countdown.astro` is the home page's hero, set in the invite's Fraunces: "Hipster" over "*Holiday* {year}" on its own line, and the boxed countdown with Fraunces numbers; home's section headings use Fraunces too
 - Home's link preview is `public/og-home.jpg`; the invite page passes its own
-- 2026 hero is a "poster": verse + punchline together on top, the room in the middle, title + countdown along the bottom with "View the invite" and "Add to calendar" buttons; gold is reserved for the punchline, the year, and the baby
+- 2026 hero is a "poster": verse + punchline together on top, the room in the middle, title + countdown along the bottom with "View the invite" and "Add to calendar" buttons
 - Theme font for 2026 is Fraunces (`--font-theme`); home features the current year's invite in its own "This Year" section (`ThisYear.astro`), and the archive below holds past years only
-- One accent per page: home runs on red (`<Base accent="red">` swaps the gold tokens), themed invite pages keep their own (gold for 2026)
+- One title treatment everywhere (home, the invite, the nav logo, the poster and link previews): "Hipster" upright in cream, *Holiday* italic in the accent, the year upright in cream
 - Gallery is centered on the page with a floating timeline nav on the right that only shows while the archive is in view
 - Year labels sit to the left of each card, pulled out of flow to keep cards centered
 - Never publish the home address: the site says "At the Spencer home" and guests get the address another way
 - RSVPs post (no-cors) to a Google Apps Script web app; with no `RSVP_ENDPOINT` set the form says RSVPs aren't open yet
-- Every page (home, the invite page, 2025) shares one `TopNav` of fixed landmarks: brand → home ("Hipster *Holiday*" with Holiday in the site red italic on every page; "HH" on the smallest phones), "This Year ’YY" (just "YYYY" on phones) → the invite page, a divider, Archive → `/#archive`, RSVP → the invite page's form; an accent underline marks the current place. Labels come from `event.ts`, so the nav needs no props
+- Every page (home, the invite page, 2025) shares one `TopNav` of fixed landmarks: brand → home ("Hipster *Holiday*" with Holiday in the accent italic; "HH" on the smallest phones), "This Year ’YY" (just "YYYY" on phones) → the invite page, a divider, Archive → `/#archive`, RSVP → the invite page's form; an accent underline marks the current place. Labels come from `event.ts`, so the nav needs no props
 
 ## Yearly Workflow
 
