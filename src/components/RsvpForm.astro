@@ -7,12 +7,14 @@ import { event, RSVP_ENDPOINT } from '../data/event';
         <h2 class="heading">Will you be stirring?</h2>
         <p class="lede">{event.date} · {event.time} · {event.location}</p>
 
-        <form class="form" data-rsvp-form data-endpoint={RSVP_ENDPOINT} novalidate>
+        <!-- method/action let the form still post (straight to the script) if JS fails, instead of a GET that puts the email in the URL -->
+        <form class="form" data-rsvp-form data-endpoint={RSVP_ENDPOINT} method="post" action={RSVP_ENDPOINT || undefined} novalidate>
             <input type="hidden" name="year" value={event.year} />
 
-            <!-- Honeypot: people never see or fill this; bots usually do -->
+            <!-- Honeypot: people never see or fill this; bots usually do. The name and label
+                 are deliberately meaningless so browser autofill doesn't fill it for real guests -->
             <div class="hp" aria-hidden="true">
-                <label>Company <input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+                <label>Leave this empty <input type="text" name="hh_trap" tabindex="-1" autocomplete="off" /></label>
             </div>
 
             <fieldset class="choice">
@@ -40,7 +42,7 @@ import { event, RSVP_ENDPOINT } from '../data/event';
             <label class="field" data-guests-field>
                 <span class="field-label">How many grown-ups?</span>
                 <select name="guests">
-                    {[1, 2, 3, 4, 5, 6].map((n) => <option value={n} selected={n === 2}>{n}</option>)}
+                    {[1, 2, 3, 4, 5, 6].map((n) => <option value={n} selected={n === 1}>{n}</option>)}
                 </select>
             </label>
 
@@ -79,6 +81,12 @@ import { event, RSVP_ENDPOINT } from '../data/event';
             e.preventDefault();
             status.textContent = '';
 
+            // `required` accepts a name of only spaces, which the script would drop silently
+            for (const field of ['name', 'email']) {
+                const input = form.elements.namedItem(field) as HTMLInputElement | null;
+                if (input) input.value = input.value.trim();
+            }
+
             if (!form.checkValidity()) {
                 status.textContent = 'Please add your name and a valid email.';
                 form.reportValidity();
@@ -97,6 +105,10 @@ import { event, RSVP_ENDPOINT } from '../data/event';
                 button.textContent = 'Sending…';
             }
 
+            // Apps Script can be slow to wake; don't leave "Sending…" up forever
+            const controller = new AbortController();
+            const timeout = window.setTimeout(() => controller.abort(), 15000);
+
             try {
                 // Apps Script doesn't send CORS headers for us to read, so this is
                 // fire-and-confirm: a network failure throws, anything else landed.
@@ -104,6 +116,7 @@ import { event, RSVP_ENDPOINT } from '../data/event';
                     method: 'POST',
                     mode: 'no-cors',
                     body: new URLSearchParams(data as unknown as Record<string, string>),
+                    signal: controller.signal,
                 });
 
                 if (data.get('attending') === 'no') {
@@ -113,11 +126,15 @@ import { event, RSVP_ENDPOINT } from '../data/event';
                 form.hidden = true;
                 thanks.hidden = false;
             } catch {
-                status.textContent = 'That didn’t go through. Check your connection and try again.';
+                status.textContent = controller.signal.aborted
+                    ? 'That’s taking too long. Check your connection and try again.'
+                    : 'That didn’t go through. Check your connection and try again.';
                 if (button) {
                     button.disabled = false;
                     button.textContent = 'Send RSVP';
                 }
+            } finally {
+                window.clearTimeout(timeout);
             }
         });
     }
