@@ -1,5 +1,11 @@
 ---
 import { event } from '../data/event';
+
+interface Props {
+    /** This year's invite poster, shown beside the details with a save link */
+    invite?: { src: string; alt: string };
+}
+const { invite } = Astro.props;
 ---
 <section class="details-section" id="details">
     <div class="intro">
@@ -10,6 +16,18 @@ import { event } from '../data/event';
             cookies won’t eat themselves.
         </p>
         <a href="#rsvp" class="cta">RSVP</a>
+
+        {invite && (
+            <figure class="invite" id="invite">
+                <img src={invite.src} alt={invite.alt} width="1080" height="1350" loading="lazy" />
+                <figcaption>
+                    <a href={invite.src} download={`hipster-holiday-${event.year}.jpg`} class="save">
+                        Save the invite
+                        <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M8 2v9M4 7.5 8 11.5l4-4M3 14h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                </figcaption>
+            </figure>
+        )}
     </div>
 
     <dl class="list">
@@ -90,6 +108,42 @@ import { event } from '../data/event';
         background: #e2bb6c;
     }
 
+    .invite {
+        margin-top: 48px;
+        max-width: 400px;
+    }
+
+    .invite img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(212, 168, 83, 0.14);
+    }
+
+    .invite figcaption {
+        margin-top: 16px;
+    }
+
+    .save {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--font-body);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--text-mid);
+        text-decoration: none;
+        transition: color 0.25s ease;
+    }
+
+    .save:hover,
+    .save:focus-visible {
+        color: var(--text-primary);
+    }
+
     .list {
         border-top: 1px solid rgba(212, 168, 83, 0.18);
     }
@@ -146,6 +200,14 @@ import { event } from '../data/event';
 
         .label {
             padding-top: 0;
+        }
+
+        .invite {
+            margin: 40px auto 0;
+        }
+
+        .invite figcaption {
+            text-align: center;
         }
     }
 </style>
