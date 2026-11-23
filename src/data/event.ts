@@ -15,7 +15,7 @@ export const event = {
         {
             label: 'When',
             value: 'Friday, December 11th · 6 PM',
-            note: 'Doors open at six. Pajamas on by seven.',
+            note: 'Show up in your best pajama threads.',
         },
         {
             label: 'Where',
@@ -24,13 +24,13 @@ export const event = {
         },
         {
             label: 'Dress code',
-            value: 'Your coziest Christmas pajamas',
-            note: 'Matching sets encouraged. Slippers are not optional.',
+            value: 'Your coziest sleepwear',
+            note: 'Pajamas, fun socks, whatever’s comfiest. Slippers optional.',
         },
         {
             label: 'Gift exchange',
             value: 'One gift per person, $30 limit',
-            note: 'Wrap it. Nobody’s stirring until it’s opened.',
+            note: 'Wrap it and get ready for a hilarious gift exchange.',
         },
         {
             label: 'On the table',
@@ -39,13 +39,13 @@ export const event = {
         },
         {
             label: 'The fun',
-            value: 'Games, music, and grown-up hide-and-seek',
-            note: 'Hide anywhere you like, just try not to fall asleep in there.',
+            value: 'Games, music, and good company',
+            note: 'This won’t be a night for napping.',
         },
         {
             label: 'Grown-ups only',
             value: 'A night off for the parents',
-            note: 'Unless your tiny human is still powered by mama’s liquid gold, this is a night for the grown-ups to stay up past bedtime in peace.',
+            note: 'Unless your tiny human is still powered by mama’s liquid gold, this is a night for grown-ups to stay up past bedtime.',
         },
     ],
 } as const;
