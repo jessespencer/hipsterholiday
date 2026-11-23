@@ -1,4 +1,5 @@
 ---
+import { ForestParallax } from '../../components/forest/ForestParallax';
 ---
 <html lang="en">
 <head>
@@ -20,13 +21,15 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" as="image" href="/2025/assets/parallax/family.webp" fetchpriority="high">
+    <link rel="preload" as="image" href="/2025/assets/parallax/sky.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=VT323&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <a href="/" class="back-link">&larr; Back</a>
     <div class="page-wrapper">
         <div class="hero-bg">
-            <img src="/2025/assets/hh-2025-banner.jpg" alt="Hipster Holiday Banner">
+            <ForestParallax client:load />
         </div>
 
         <div class="content-wrapper">
@@ -39,31 +42,41 @@
 
                 <div class="hero-logo">
                     <img src="/2025/assets/hh-2025-logo.png" alt="Hipster Holiday Logo">
+                    <!-- the unlit "L" tube: fading it in makes that letter brown out like loose neon -->
+                    <img class="logo-tube-off" src="/2025/assets/hh-2025-logo-l-off.png" alt="" aria-hidden="true">
                 </div>
 
-                <div class="details-section">
-                    <h2 class="section-title">DETAILS</h2>
+                <section class="details-section" aria-labelledby="details-title">
+                    <h2 class="neon-title" id="details-title">
+                        <span class="neon-bar" aria-hidden="true"></span>
+                        The Details
+                        <span class="neon-bar" aria-hidden="true"></span>
+                    </h2>
 
-                    <div class="event-card">
-                        <div class="event-section">
-                            <p class="event-content"><strong>📅 When the portal unofficially opens</strong></p>
-                            <p class="event-content body-text">Friday, December 12th, 2025 at 6:00 PM</p>
+                    <div class="crt">
+                        <div class="case-file">
+                            <p class="file-label">File 001 &middot; When</p>
+                            <h3 class="file-heading">When the portal unofficially opens</h3>
+                            <p class="file-date">Friday, December 12th, 2025 at 6:00&nbsp;PM</p>
                         </div>
 
-                        <div class="event-section">
-                            <p class="event-content"><strong>🎄 Step into Friendsmas… Stranger Things edition.</strong></p>
-                            <div class="event-content body-text event-body">
+                        <div class="case-file">
+                            <p class="file-label">File 002 &middot; What</p>
+                            <h3 class="file-heading">Step into Friendsmas&hellip; Stranger Things edition.</h3>
+                            <div class="file-body">
                                 <p>Homemade cookies, steaming glühwein, dangerously good food, and games that may accidentally open a tiny portal to the Upside Down.</p>
                                 <p>Wear your finest Christmas drip or lean fully into that 80's Hawkins aesthetic—think retro sweaters, mall-rat chic, or "I'm just stopping by to battle a Demogorgon real quick."</p>
                                 <p>We're classing it up this year: one gift per person, limit $30. No flea-market relics… unless they're fabulous.</p>
                                 <p>Unless your tiny human is still powered by mana's liquid gold, this is a night for the grown-ups to battle Vecna in peace.</p>
                             </div>
                         </div>
+
                     </div>
-                </div>
+                </section>
             </div>
         </div>
     </div>
+
 </body>
 </html>
 
@@ -115,12 +128,6 @@
         width: 1280px;
         height: auto;
         z-index: 0;
-    }
-
-    .hero-bg img {
-        width: 100%;
-        height: auto;
-        display: block;
     }
 
     .content-wrapper {
@@ -183,62 +190,176 @@
         object-fit: cover;
     }
 
+    /* ---- Neon flicker: a slow buzz across the sign, plus one loose letter ---- */
+    .hero-logo {
+        position: relative;
+        animation: neon-buzz 9s infinite;
+    }
+
+    /* sits exactly over the "L" in HOLIDAY (crop box in the logo image, in %) */
+    .hero-logo .logo-tube-off {
+        position: absolute;
+        left: 32.982%;
+        top: 41.296%;
+        width: 17.632%;
+        height: 32.928%;
+        object-fit: fill;
+        opacity: 0;
+        animation: neon-loose 6.5s infinite;
+    }
+
+    @keyframes neon-buzz {
+        0%, 100% { filter: brightness(1); }
+        41% { filter: brightness(1); }
+        42% { filter: brightness(0.72); }
+        43% { filter: brightness(1.05); }
+        44.5% { filter: brightness(0.82); }
+        46% { filter: brightness(1); }
+        78% { filter: brightness(0.96); }
+        79% { filter: brightness(1.04); }
+    }
+
+    /* opacity of the unlit tube: 0 = lit, 1 = out */
+    @keyframes neon-loose {
+        0%, 30%, 37%, 69%, 81%, 100% { opacity: 0; }
+        31% { opacity: 0.9; }
+        32% { opacity: 0.1; }
+        33.5% { opacity: 0.75; }
+        35% { opacity: 0; }
+        70% { opacity: 1; }
+        75% { opacity: 1; }
+        76% { opacity: 0.3; }
+        77% { opacity: 0.85; }
+        78.5% { opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .hero-logo, .hero-logo .logo-tube-off { animation: none; }
+    }
+
     .details-section {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 24px;
+        gap: 40px;
         width: 100%;
+        max-width: 560px;
     }
 
-    .section-title {
-        font-family: 'Figtree', sans-serif;
-        font-weight: 700;
-        font-size: 20px;
-        line-height: 19px;
-        letter-spacing: 0;
-        text-transform: uppercase;
-        color: #d81e1e;
-        text-align: center;
-    }
-
-    .event-card {
-        background: #11131f;
-        border-radius: 32px;
-        padding: 32px;
-        width: 100%;
-        max-width: 500px;
+    /* ---- Neon section title, framed like the logo ---- */
+    .neon-title {
         display: flex;
-        flex-direction: column;
-        gap: 32px;
         align-items: center;
-        justify-content: center;
+        gap: 18px;
+        width: 100%;
+        font-family: 'Libre Baskerville', Georgia, serif;
+        font-weight: 700;
+        font-size: 30px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        color: transparent;
+        -webkit-text-stroke: 1.2px #ff4a3d;
+        text-shadow: 0 0 6px rgb(255 50 40 / 0.85), 0 0 18px rgb(220 20 20 / 0.6), 0 0 40px rgb(200 0 0 / 0.35);
     }
 
-    .event-section {
+    .neon-bar {
+        flex: 1;
+        height: 3px;
+        border-radius: 2px;
+        background: #ff5a4a;
+        box-shadow: 0 0 6px rgb(255 50 40 / 0.9), 0 0 16px rgb(220 20 20 / 0.6);
+    }
+
+    /* ---- VHS / CRT card ---- */
+    .crt {
+        position: relative;
+        width: 100%;
+        padding: 44px 36px 48px;
+        border-radius: 22px;
+        background:
+            radial-gradient(ellipse at 50% 40%, #121528 0%, #0a0c18 70%, #06070f 100%);
+        border: 1.5px solid rgb(255 70 60 / 0.75);
+        box-shadow:
+            0 0 0 1px rgb(255 70 60 / 0.15),
+            0 0 18px rgb(255 40 30 / 0.35),
+            0 0 60px rgb(200 0 0 / 0.18),
+            inset 0 0 60px rgb(0 0 0 / 0.75);
         display: flex;
         flex-direction: column;
+        gap: 44px;
+        overflow: hidden;
+        isolation: isolate;
+    }
+
+    /* faint scanlines */
+    .crt::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 2;
+        background: repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.035) 0 1px, transparent 1px 3px);
+        mix-blend-mode: screen;
+    }
+    .case-file {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         gap: 10px;
-        width: 100%;
-    }
-
-    .event-content {
-        font-family: 'Figtree', sans-serif;
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 19px;
-        color: #ffffff;
         text-align: center;
-        width: 100%;
     }
 
-    .event-content p { margin: 0; color: #ffffff; }
-    .body-text { color: rgba(255, 255, 255, 0.7) !important; }
-    .body-text p { color: rgba(255, 255, 255, 0.7) !important; }
-    .event-body { display: flex; flex-direction: column; gap: 32px; }
-    .event-body p { margin: 0; color: rgba(255, 255, 255, 0.7) !important; }
-    .event-content strong { font-weight: 700; }
+    .file-label {
+        font-family: 'VT323', monospace;
+        font-size: 20px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #ff5a4a;
+        text-shadow: 0 0 6px rgb(255 60 40 / 0.55);
+    }
 
+    .file-heading {
+        font-family: 'Libre Baskerville', Georgia, serif;
+        font-weight: 700;
+        font-size: 21px;
+        line-height: 1.35;
+        color: #f4ede0;
+    }
+
+    .file-date {
+        font-family: 'Courier Prime', 'Courier New', monospace;
+        font-size: 17px;
+        color: rgb(244 237 224 / 0.8);
+    }
+
+    .file-body {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        margin-top: 8px;
+        font-family: 'Courier Prime', 'Courier New', monospace;
+        font-size: 16px;
+        line-height: 1.6;
+        color: rgb(244 237 224 / 0.74);
+    }
+
+    /* a tiny bulb between paragraphs */
+    .file-body p + p::before {
+        content: '';
+        display: block;
+        width: 7px;
+        height: 11px;
+        margin: 0 auto 22px;
+        border-radius: 50% 50% 45% 45%;
+        background: hsl(var(--b, 0) 95% 60%);
+        box-shadow: 0 0 10px hsl(var(--b, 0) 95% 55%);
+    }
+    .file-body p:nth-child(2) { --b: 130; }
+    .file-body p:nth-child(3) { --b: 45; }
+    .file-body p:nth-child(4) { --b: 200; }
 
 
     @media (max-width: 1280px) {
@@ -252,10 +373,9 @@
         .main-content { margin-top: 470px; gap: 40px; padding: 0 24px; width: 100%; }
         .hero-logo { width: 100%; max-width: 500px; height: auto; aspect-ratio: 1140 / 741; }
         .hero-logo img { width: 100%; height: 100%; object-fit: contain; }
-        .section-title { font-size: 20px; }
-        .details-section { gap: 24px; width: 100%; }
-        .event-card { width: 100%; max-width: 100%; padding: 32px; }
-        .event-content { font-size: 16px; line-height: 19px; }
+        .details-section { gap: 32px; }
+        .neon-title { font-size: 24px; gap: 12px; }
+        .crt { padding: 36px 22px 40px; }
     }
 
     @media (max-width: 480px) {
@@ -266,10 +386,7 @@
         .subtitle-mobile { display: inline; }
         .main-content { margin-top: 450px; gap: 24px; padding: 0 24px; }
         .hero-logo { width: 100%; max-width: 500px; height: auto; aspect-ratio: 1140 / 741; }
-        .section-title { font-size: 20px; }
-        .details-section { gap: 24px; width: 100%; }
-        .event-card { padding: 32px; width: 100%; max-width: 100%; }
-        .event-content { font-size: 16px; line-height: 19px; }
-        .event-content p { margin-bottom: 8px; }
+        .neon-title { font-size: 20px; letter-spacing: 2px; }
+        .file-heading { font-size: 19px; }
     }
 </style>

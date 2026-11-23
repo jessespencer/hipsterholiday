@@ -1,0 +1,316 @@
+.forest {
+  --ambient: 1;
+  --motion: 0;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: clip;
+  background: #010310;
+  isolation: isolate;
+  user-select: none;
+  /* the scene's lower edge melts into the page, so no drifting layer can show a seam there */
+  mask-image: linear-gradient(to bottom, #000 82%, transparent 99%);
+}
+
+/* Every layer is the poster's 2000px square plus 100px of overscan per side. */
+.forest__layer {
+  position: absolute;
+  left: -5%;
+  top: -5%;
+  width: 110%;
+  height: 110%;
+  pointer-events: none;
+  will-change: transform;
+  /* push-in scales around the family (poster y = 600) */
+  transform-origin: 50% 31.8%;
+}
+
+.forest__layer[hidden] {
+  display: none;
+}
+
+.forest__img,
+.forest__sway,
+.forest__glows {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.forest__img {
+  display: block;
+  -webkit-user-drag: none;
+}
+
+.forest__glows {
+  opacity: var(--ambient);
+  pointer-events: none;
+}
+
+.forest:not([data-ready]) .forest__glows,
+.forest:not([data-ready]) .forest__mist-wrap,
+.forest:not([data-ready]) .forest__flares {
+  visibility: hidden;
+}
+
+.forest__glows > span {
+  position: absolute;
+  translate: -50% -50%;
+  border-radius: 50%;
+}
+
+/* ---- Christmas lights: each bulb on its own irregular rhythm ---- */
+.forest__bulb {
+  --peak: 0.9;
+  background: radial-gradient(
+    circle,
+    hsl(var(--hue) 100% 88% / 0.95) 0%,
+    hsl(var(--hue) 100% 64% / 0.6) 14%,
+    hsl(var(--hue) 100% 55% / 0.22) 34%,
+    transparent 68%
+  );
+  mix-blend-mode: screen;
+  opacity: calc(var(--peak) * 0.7);
+  animation: forest-twinkle-a var(--dur) ease-in-out var(--delay) infinite;
+}
+
+.forest__bulb--1 { animation-name: forest-twinkle-b; }
+.forest__bulb--2 { animation-name: forest-twinkle-c; }
+.forest__bulb--flaky0 { animation-name: forest-flicker-a; animation-timing-function: steps(1, end); }
+.forest__bulb--flaky1 { animation-name: forest-flicker-b; animation-timing-function: steps(1, end); }
+
+/* Swell and fade. */
+@keyframes forest-twinkle-a {
+  0%, 100% { opacity: calc(var(--peak) * 0.25); }
+  23% { opacity: calc(var(--peak) * 0.95); }
+  41% { opacity: calc(var(--peak) * 0.5); }
+  63% { opacity: var(--peak); }
+  82% { opacity: calc(var(--peak) * 0.15); }
+}
+
+@keyframes forest-twinkle-b {
+  0%, 100% { opacity: calc(var(--peak) * 0.8); }
+  17% { opacity: calc(var(--peak) * 0.2); }
+  48% { opacity: var(--peak); }
+  71% { opacity: calc(var(--peak) * 0.35); }
+}
+
+@keyframes forest-twinkle-c {
+  0%, 100% { opacity: calc(var(--peak) * 0.55); }
+  31% { opacity: calc(var(--peak) * 0.1); }
+  37% { opacity: calc(var(--peak) * 0.85); }
+  66% { opacity: calc(var(--peak) * 0.6); }
+  88% { opacity: var(--peak); }
+}
+
+/* A loose bulb: mostly on, with quick uneven stutters. */
+@keyframes forest-flicker-a {
+  0% { opacity: var(--peak); }
+  52% { opacity: 0.05; }
+  55% { opacity: var(--peak); }
+  58% { opacity: 0.15; }
+  61% { opacity: calc(var(--peak) * 0.8); }
+  83% { opacity: 0.05; }
+  86% { opacity: var(--peak); }
+}
+
+@keyframes forest-flicker-b {
+  0% { opacity: calc(var(--peak) * 0.9); }
+  30% { opacity: 0.1; }
+  33% { opacity: var(--peak); }
+  70% { opacity: 0.05; }
+  72% { opacity: calc(var(--peak) * 0.6); }
+  75% { opacity: 0.1; }
+  79% { opacity: var(--peak); }
+}
+
+/* ---- Stars ---- */
+.forest__star {
+  width: 0.16%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgb(225 235 255 / 0.9), transparent 70%);
+  opacity: 0.35;
+  animation: forest-shimmer var(--dur) ease-in-out var(--delay) infinite;
+}
+
+@keyframes forest-shimmer {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.6; }
+}
+
+/* ---- Cabin window ---- */
+.forest__window {
+  width: 3.4%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgb(255 196 92 / 0.55), rgb(255 160 60 / 0.16) 38%, transparent 70%);
+  mix-blend-mode: screen;
+  animation: forest-flicker 7s ease-in-out infinite;
+}
+
+@keyframes forest-flicker {
+  0%, 100% { opacity: 0.85; }
+  18% { opacity: 0.95; }
+  22% { opacity: 0.78; }
+  47% { opacity: 1; }
+  71% { opacity: 0.88; }
+  76% { opacity: 0.96; }
+}
+
+/* ---- Flashlight: breathes, and blooms a little when the view moves ---- */
+.forest__flashlight {
+  width: 9%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgb(255 246 222 / 0.6), rgb(255 226 170 / 0.18) 34%, transparent 68%);
+  mix-blend-mode: screen;
+  opacity: calc(0.75 + var(--motion) * 0.25);
+  scale: calc(1 + var(--motion) * 0.08);
+  animation: forest-breathe 6s ease-in-out infinite;
+}
+
+@keyframes forest-breathe {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.12); }
+}
+
+/* ---- The darkness the poster fades into (poster y 940 -> 1230 and below) ---- */
+.forest__shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 47.3%,
+    rgb(1 3 16 / 0.35) 51.8%,
+    rgb(1 3 16 / 0.8) 56.4%,
+    #010310 60.5%
+  );
+}
+
+/* ---- Lens flare ghosts from the flashlight (placed by placeFlares) ---- */
+.forest__flares {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: calc(var(--ambient) * var(--flare, 1) * (0.85 + var(--motion) * 0.3));
+}
+
+.forest__flare {
+  position: absolute;
+  left: 0;
+  top: 0;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+/* soft disc with a slightly brighter rim, like an aperture ghost */
+.forest__flare--disk {
+  background: radial-gradient(
+    circle,
+    rgb(var(--tint) / 0.07) 0%,
+    rgb(var(--tint) / 0.1) 52%,
+    rgb(var(--tint) / 0.2) 64%,
+    rgb(var(--tint) / 0.06) 68%,
+    transparent 71%
+  );
+}
+
+/* the big thin halo ring, with a faint chromatic edge */
+.forest__flare--ring {
+  background: radial-gradient(
+    circle,
+    transparent 63%,
+    rgb(120 200 255 / 0.06) 65.5%,
+    rgb(var(--tint) / 0.16) 67%,
+    rgb(255 170 120 / 0.08) 68.5%,
+    transparent 70.5%
+  );
+}
+
+/* ---- Mist ---- */
+.forest__mist-wrap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 30%;
+  height: 20%;
+  mask-image: radial-gradient(ellipse 34% 60% at 50% 55%, #000 30%, transparent 100%);
+  opacity: calc(var(--ambient) * 0.5);
+}
+
+/* low haze where the family meets the ground, behind the cabin */
+.forest__mist-wrap--ground {
+  top: 42.5%;
+  height: 9%;
+  mask-image: radial-gradient(ellipse 30% 55% at 50% 50%, #000 35%, transparent 100%);
+  opacity: calc(var(--ambient) * 0.65);
+}
+
+.forest__mist {
+  position: absolute;
+  inset: 0 -6%;
+  background: url('/2025/assets/parallax/mist.webp') center / 100% 100% no-repeat;
+  animation: forest-drift 46s ease-in-out infinite alternate;
+}
+
+.forest__mist--b {
+  top: 18%;
+  transform: scaleX(-1);
+  opacity: 0.7;
+  animation-duration: 63s;
+  animation-delay: -20s;
+}
+
+@keyframes forest-drift {
+  from { translate: -3% 0; }
+  to { translate: 3% 0; }
+}
+
+/* ---- Trees sway from the roots ---- */
+.forest__sway {
+  animation: forest-sway 9s ease-in-out infinite alternate;
+}
+
+.forest__layer--treesRight .forest__sway {
+  animation-duration: 11.5s;
+  animation-delay: -5s;
+}
+
+@keyframes forest-sway {
+  from { rotate: -0.18deg; }
+  to { rotate: 0.18deg; }
+}
+
+.forest__vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 48% 42% at 50% 30%, transparent 62%, rgb(1 3 16 / 0.4) 100%);
+}
+
+.forest[data-paused] *,
+.forest[data-paused] *::before {
+  animation-play-state: paused !important;
+}
+
+.forest[data-reduced] * {
+  animation: none !important;
+}
+
+/* ---- Dev: outline each plane's alpha edge in its own color ---- */
+.forest[data-bounds] .forest__layer .forest__img {
+  --c: var(--bound, #f0f);
+  filter: drop-shadow(1px 0 0 var(--c)) drop-shadow(-1px 0 0 var(--c)) drop-shadow(0 1px 0 var(--c))
+    drop-shadow(0 -1px 0 var(--c));
+}
+.forest[data-bounds] .forest__layer { outline: 1px dashed var(--bound, #f0f); outline-offset: -2px; }
+.forest__layer--sky { --bound: #7af; }
+.forest__layer--far { --bound: #4fd; }
+.forest__layer--mist { --bound: #fff; }
+.forest__layer--cabin { --bound: #fd4; }
+.forest__layer--shade { --bound: #888; }
+.forest__layer--strand { --bound: #f84; }
+.forest__layer--family { --bound: #f4a; }
+.forest__layer--treesLeft,
+.forest__layer--treesRight { --bound: #6f6; }
