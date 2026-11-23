@@ -38,6 +38,11 @@ export const event = {
             note: 'Bring an appetite. The baby is not sharing.',
         },
         {
+            label: 'The fun',
+            value: 'Games, music, and grown-up hide-and-seek',
+            note: 'Hide anywhere you like, just try not to fall asleep in there. We’ve all been up since 5 AM.',
+        },
+        {
             label: 'Grown-ups only',
             value: 'A night off for the parents',
             note: 'Unless your tiny human is still powered by mama’s liquid gold, this is a night for the grown-ups to stay up past bedtime in peace.',
