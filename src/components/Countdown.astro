@@ -14,7 +14,8 @@ const { invite } = Astro.props;
     <div class="countdown-inner">
         <h1 class="title">
             <span class="kicker">The Spencer Family’s</span>
-            Hipster <em class="accent">Holiday{invite && <>{' '}{invite.year}</>}</em>
+            Hipster
+            <em class="line">Holiday{invite && <>{' '}<span class="year">{invite.year}</span></>}</em>
         </h1>
 
         <span class="rule" aria-hidden="true"></span>
@@ -86,14 +87,18 @@ const { invite } = Astro.props;
     }
 
     /* Like the original home title: "Holiday" (and the year) in a red italic */
-    .accent {
+    /* "Holiday {year}" on its own line in italic; only the year takes the accent red */
+    .line {
+        display: block;
         font-style: italic;
         font-weight: 700;
         font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 144;
-        color: var(--gold);
-        display: block;
         /* The italic leans past its box; give the last figure room */
         padding-right: 0.04em;
+    }
+
+    .year {
+        color: var(--gold);
     }
 
     .rule {

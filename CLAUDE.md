@@ -23,7 +23,7 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 - Colors: `#0a0806` bg, `#bf3a2b` accent red, `#d4a853` gold, `#ede4d4` text
 - Warm radial glow for atmosphere (no film grain — it was removed)
 - Countdown targets the 2nd Friday of December at 6 PM MST dynamically
-- The invite page's hero is themed to the year (`Hero2026.astro`: dark bedroom, nightlight tour then pointer/touch control, reveal on the baby; under Reduce Motion the light fades between stops) and embeds `CountdownTimer`; `Countdown.astro` is the home page's hero, set in the invite's Fraunces: "Hipster" over "Holiday {year}" (its own line, accent italic), and the boxed countdown with Fraunces numbers; home's section headings use Fraunces too
+- The invite page's hero is themed to the year (`Hero2026.astro`: dark bedroom, nightlight tour then pointer/touch control, reveal on the baby; under Reduce Motion the light fades between stops) and embeds `CountdownTimer`; `Countdown.astro` is the home page's hero, set in the invite's Fraunces: "Hipster" over italic "Holiday {year}" on its own line, with only the year in the accent, and the boxed countdown with Fraunces numbers; home's section headings use Fraunces too
 - Home's link preview is `public/og-home.jpg`; the invite page passes its own
 - 2026 hero is a "poster": verse + punchline together on top, the room in the middle, title + countdown along the bottom with "View the invite" and "Add to calendar" buttons; gold is reserved for the punchline, the year, and the baby
 - Theme font for 2026 is Fraunces (`--font-theme`); home features the current year's invite in its own "This Year" section (`ThisYear.astro`), and the archive below holds past years only
