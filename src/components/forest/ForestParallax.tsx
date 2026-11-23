@@ -162,7 +162,6 @@ export const ForestParallax = ({ label = 'The Spencer family in a moonlit forest
   const settingsRef = useRef(settings);
   const kickRef = useRef<() => void>(() => {});
   const [debug, setDebug] = useState(false);
-  const [systemReduced, setSystemReduced] = useState(false);
 
   const updateSettings = useCallback((next: MotionSettings) => {
     settingsRef.current = next;
@@ -172,14 +171,9 @@ export const ForestParallax = ({ label = 'The Spencer family in a moonlit forest
 
   useEffect(() => {
     if (import.meta.env.DEV && new URLSearchParams(location.search).has('debug')) setDebug(true);
-    const mq = matchMedia('(prefers-reduced-motion: reduce)');
-    const onChange = () => setSystemReduced(mq.matches);
-    onChange();
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
   }, []);
 
-  const reduced = systemReduced || settings.reducedMotion;
+  const reduced = settings.reducedMotion;
 
   // Keep the glows and mist hidden until the art itself has decoded.
   useEffect(() => {
@@ -351,7 +345,7 @@ export const ForestParallax = ({ label = 'The Spencer family in a moonlit forest
       </div>
       {DevPanel && debug && (
         <Suspense fallback={null}>
-          <DevPanel settings={settings} onChange={updateSettings} systemReduced={systemReduced} />
+          <DevPanel settings={settings} onChange={updateSettings} />
         </Suspense>
       )}
     </div>

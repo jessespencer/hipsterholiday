@@ -5,7 +5,6 @@ import { defaultSettings, layers, type LayerId, type MotionSettings } from './la
 interface Props {
   settings: MotionSettings;
   onChange: (next: MotionSettings) => void;
-  systemReduced: boolean;
 }
 
 const panel: CSSProperties = {
@@ -53,7 +52,7 @@ const Check = ({ label, checked, onToggle, disabled }: {
 );
 
 /** Dev-only tuning panel; open the page with ?debug under `astro dev`. */
-export const DevPanel = ({ settings: s, onChange, systemReduced }: Props) => {
+export const DevPanel = ({ settings: s, onChange }: Props) => {
   const set = (patch: Partial<MotionSettings>) => onChange({ ...s, ...patch });
   const setDepth = (id: LayerId, v: number) => set({ depths: { ...s.depths, [id]: v } });
 
@@ -81,9 +80,8 @@ export const DevPanel = ({ settings: s, onChange, systemReduced }: Props) => {
 
       <p style={h}>Debug</p>
       <Check
-        label={systemReduced ? 'Reduced motion (on in OS)' : 'Reduced motion'}
-        checked={s.reducedMotion || systemReduced}
-        disabled={systemReduced}
+        label="Reduced motion"
+        checked={s.reducedMotion}
         onToggle={(v) => set({ reducedMotion: v })}
       />
       <Check label="Show layer boundaries" checked={s.showBounds} onToggle={(v) => set({ showBounds: v })} />

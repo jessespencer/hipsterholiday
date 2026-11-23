@@ -85,8 +85,6 @@ import CountdownTimer from './CountdownTimer.astro';
     const awake = document.querySelector<SVGElement>('[data-awake]');
 
     if (hero && scene && img && fx && awake) {
-        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
         // Map photo coordinates to scene pixels, honouring object-fit: cover + object-position
         let map = { scale: 1, ox: 0, oy: 0 };
         const toScene = (p: { x: number; y: number }) => ({ x: map.ox + p.x * map.scale, y: map.oy + p.y * map.scale });
@@ -161,27 +159,11 @@ import CountdownTimer from './CountdownTimer.astro';
             let tourStep = 0;
             let tourTimer = 0;
 
-            // With Reduce Motion the light doesn't glide: it dims, reappears at the
-            // next stop, and is already stretched over the baby when it lands on her.
-            const FADE_MS = 600;
+            // The light glides from stop to stop (always, whatever the device's motion setting)
             function advanceTour() {
                 if (userDriving || tourStep >= TOUR.length - 1) return;
-                if (!reduceMotion) {
-                    tourStep++;
-                    tourTimer = window.setTimeout(advanceTour, 1800);
-                    return;
-                }
-                hero!.classList.remove('is-lit');
-                tourTimer = window.setTimeout(() => {
-                    if (userDriving) return;
-                    tourStep++;
-                    const p = toScene(TOUR[tourStep]);
-                    cur.x = target.x = p.x;
-                    cur.y = target.y = p.y;
-                    if (tourStep === TOUR.length - 1) wake();
-                    hero!.classList.add('is-lit');
-                    tourTimer = window.setTimeout(advanceTour, 1800 + FADE_MS);
-                }, FADE_MS);
+                tourStep++;
+                tourTimer = window.setTimeout(advanceTour, 1800);
             }
             setLight(start.x, start.y);
             // The first line plays alone; the light comes on with "not a creature was stirring…"
@@ -258,7 +240,7 @@ import CountdownTimer from './CountdownTimer.astro';
                 cur.y += (target.y - cur.y) * ease;
 
                 const morphTarget = found && !userDriving ? 1 : 0;
-                morph = reduceMotion ? morphTarget : morph + (morphTarget - morph) * (1 - Math.pow(1 - 0.05, dt / 16.7));
+                morph = morph + (morphTarget - morph) * (1 - Math.pow(1 - 0.05, dt / 16.7));
                 const body = toScene(BABY_BODY);
                 setLight(cur.x + (body.x - cur.x) * morph, cur.y + (body.y - cur.y) * morph);
                 scene!.style.setProperty('--m', morph.toFixed(3));
@@ -291,8 +273,7 @@ import CountdownTimer from './CountdownTimer.astro';
                 if (visible) {
                     last = 0;
                     raf = requestAnimationFrame(frame);
-                    // Drifting z's and sparkles are pure motion, so Reduce Motion skips them
-                    if (!reduceMotion) fxTimer = window.setInterval(puff, 650);
+                    fxTimer = window.setInterval(puff, 650);
                 }
             });
             io.observe(hero);
@@ -1063,36 +1044,6 @@ import CountdownTimer from './CountdownTimer.astro';
 
         .hero26 .timer {
             margin-top: 16px;
-        }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        /* The tour fades the light between stops, so keep each fade short */
-        .hero26 {
-            transition-duration: 0.6s;
-        }
-
-        .scene {
-            transition: none;
-        }
-
-        .poem span {
-            animation: none;
-            opacity: 1;
-        }
-
-
-        .punch {
-            transition: none;
-        }
-
-        .is-found .awake-lines path {
-            animation: none;
-            stroke-dashoffset: 0;
-        }
-
-        .is-found .awake-lines {
-            animation: none;
         }
     }
 </style>
