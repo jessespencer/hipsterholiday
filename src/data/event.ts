@@ -40,7 +40,7 @@ export const event = {
         {
             label: 'The fun',
             value: 'Games, music, and grown-up hide-and-seek',
-            note: 'Hide anywhere you like, just try not to fall asleep in there. We’ve all been up since 5 AM.',
+            note: 'Hide anywhere you like, just try not to fall asleep in there.',
         },
         {
             label: 'Grown-ups only',
