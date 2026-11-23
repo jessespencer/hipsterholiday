@@ -8,11 +8,18 @@ const invite = `/${event.year}/`;
 const path = Astro.url.pathname;
 const onInvite = path.startsWith(invite) || path === invite.slice(0, -1);
 const onHome = path === '/';
+const shortYear = `’${String(event.year).slice(-2)}`;
 ---
 <header class="topnav" data-topnav>
-    <a href="/" class="brand">Hipster Holiday</a>
+    <a href="/" class="brand" aria-label="Hipster Holiday: home"><span class="brand-full">Hipster Holiday</span><span class="brand-short" aria-hidden="true">HH</span></a>
     <nav class="links" aria-label="Site">
-        <a href={invite} class="link" aria-current={onInvite ? 'page' : undefined}>{event.year}</a>
+        <a href={invite} class="link this-year" aria-current={onInvite ? 'page' : undefined} aria-label={`This year: ${event.year}`}>
+            <span class="twinkle" aria-hidden="true">✦</span>
+            <span class="this-label">This Year</span>
+            <span class="yr" aria-hidden="true">{shortYear}</span>
+            <span class="yr-full" aria-hidden="true">{event.year}</span>
+        </a>
+        <span class="divider" aria-hidden="true"></span>
         <a href="/#archive" class="link" data-archive-link={onHome ? '' : undefined}>Archive</a>
         <a href={`${invite}#rsvp`} class="link link-cta">RSVP</a>
     </nav>
@@ -116,6 +123,58 @@ const onHome = path === '/';
         transform: scaleX(1);
     }
 
+    /* This year's party: a twinkling star, the label, and the year as a little accent badge */
+    .this-year {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 7px;
+        white-space: nowrap;
+    }
+
+    .yr-full,
+    .brand-short {
+        display: none;
+    }
+
+    .twinkle {
+        display: inline-block;
+        font-size: 12px;
+        letter-spacing: 0;
+        color: var(--gold, #d4a853);
+        text-shadow: 0 0 8px color-mix(in srgb, var(--gold, #d4a853) 70%, transparent);
+        animation: nav-twinkle 2.6s ease-in-out infinite;
+    }
+
+    @keyframes nav-twinkle {
+        0%, 100% { opacity: 0.55; transform: scale(0.85) rotate(0deg); }
+        45% { opacity: 1; transform: scale(1.15) rotate(45deg); }
+    }
+
+    .yr {
+        font-family: var(--font-theme, 'Fraunces', Georgia, serif);
+        font-style: italic;
+        font-weight: 700;
+        font-variation-settings: 'SOFT' 100, 'opsz' 24;
+        font-size: 13px;
+        letter-spacing: 0;
+        text-transform: none;
+        color: var(--gold, #d4a853);
+    }
+
+    /* Keeps this year apart from the archive */
+    .divider {
+        width: 1px;
+        height: 16px;
+        background: color-mix(in srgb, var(--text-primary, #ede4d4) 22%, transparent);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .twinkle {
+            animation: none;
+            opacity: 1;
+        }
+    }
+
     .link-cta {
         padding: 9px 18px;
         border-radius: 100px;
@@ -146,7 +205,43 @@ const onHome = path === '/';
         }
 
         .link-cta {
-            padding: 8px 14px;
+            padding: 8px 13px;
+        }
+
+        .links {
+            gap: 12px;
+        }
+
+        /* Phones: "This Year '26" becomes a twinkling year */
+        .this-label,
+        .yr {
+            display: none;
+        }
+
+        .yr-full {
+            display: inline;
+            font-family: var(--font-theme, 'Fraunces', Georgia, serif);
+            font-style: italic;
+            font-weight: 700;
+            font-variation-settings: 'SOFT' 100, 'opsz' 24;
+            font-size: 15px;
+            letter-spacing: 0;
+            color: var(--text-primary, #ede4d4);
+        }
+
+        .this-year {
+            gap: 5px;
+        }
+    }
+
+    /* The smallest phones: the brand shrinks to a monogram */
+    @media (max-width: 370px) {
+        .brand-full {
+            display: none;
+        }
+
+        .brand-short {
+            display: inline;
         }
     }
 </style>
