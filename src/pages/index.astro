@@ -1,21 +1,24 @@
 ---
+// Home: the countdown to the next party, a way into this year's invite, and the archive.
 import Base from '../layouts/Base.astro';
 import TopNav from '../components/TopNav.astro';
-import Hero2026 from '../components/Hero2026.astro';
-import EventDetails from '../components/EventDetails.astro';
-import RsvpForm from '../components/RsvpForm.astro';
+import Countdown from '../components/Countdown.astro';
 import InviteGallery from '../components/InviteGallery.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import { event } from '../data/event';
+
+const invite = `/${event.year}/`;
 ---
-<Base
-    title="Hipster Holiday 2026"
-    description="’Twas the night before Christmas, the parents half crazy, not a creature was stirring… except for the baby. The Spencer Family’s Hipster Holiday, Friday, December 11th at 6 PM."
->
-    <TopNav />
+<Base title="Hipster Holiday">
+    <TopNav
+        links={[
+            { href: invite, label: String(event.year) },
+            { href: '#archive', label: 'Archive' },
+        ]}
+        cta={{ href: `${invite}#rsvp`, label: 'RSVP' }}
+    />
     <main>
-        <Hero2026 />
-        <EventDetails />
-        <RsvpForm />
+        <Countdown invite={{ href: invite, year: event.year }} />
         <InviteGallery />
     </main>
     <SiteFooter />

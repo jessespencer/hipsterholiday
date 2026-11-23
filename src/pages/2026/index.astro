@@ -1,0 +1,30 @@
+---
+// The 2026 invite: the page guests get texted. Everything about this year's party lives here.
+import Base from '../../layouts/Base.astro';
+import TopNav from '../../components/TopNav.astro';
+import Hero2026 from '../../components/Hero2026.astro';
+import EventDetails from '../../components/EventDetails.astro';
+import RsvpForm from '../../components/RsvpForm.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+---
+<Base
+    title="Hipster Holiday 2026"
+    description="’Twas the night before Christmas, the parents half crazy, not a creature was stirring… except for the baby. The Spencer Family’s Hipster Holiday, Friday, December 11th at 6 PM."
+    image="/2026/assets/og-2026.jpg"
+    imageAlt="The family asleep in a pile on the bed while the new baby is wide awake: Hipster Holiday 2026"
+>
+    <TopNav
+        brandHref="/"
+        links={[
+            { href: '#details', label: 'Details' },
+            { href: '/#archive', label: 'Archive' },
+        ]}
+        cta={{ href: '#rsvp', label: 'RSVP' }}
+    />
+    <main>
+        <Hero2026 />
+        <EventDetails />
+        <RsvpForm />
+    </main>
+    <SiteFooter />
+</Base>

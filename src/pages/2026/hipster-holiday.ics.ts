@@ -1,8 +1,8 @@
-// Builds /hipster-holiday.ics: the "Add to calendar" file for this year's party.
+// Builds /2026/hipster-holiday.ics: the "Add to calendar" file for this year's party.
 // Apple Calendar, Google Calendar and Outlook all open it.
-import { event } from '../data/event';
+import { event } from '../../data/event';
 
-const SITE = 'https://hipsterholiday.com/';
+const SITE = `https://hipsterholiday.com/${event.year}/`;
 
 // iCalendar wants 20261212T010000Z, not an ISO string
 const stamp = (iso: string) => iso.replace(/[-:]/g, '').replace(/\.\d+/, '');

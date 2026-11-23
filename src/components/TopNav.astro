@@ -1,17 +1,24 @@
 ---
 // Fixed top navigation: transparent over the hero, solid once you scroll.
-const links = [
-    { href: '#details', label: 'Details' },
-    { href: '#archive', label: 'Archive' },
-];
+// Each page passes its own links; the brand goes home (or to the top on home).
+interface Link {
+    href: string;
+    label: string;
+}
+interface Props {
+    links: Link[];
+    cta?: Link;
+    brandHref?: string;
+}
+const { links, cta, brandHref = '#countdown-hero' } = Astro.props;
 ---
 <header class="topnav" data-topnav>
-    <a href="#countdown-hero" class="brand">Hipster Holiday</a>
+    <a href={brandHref} class="brand">Hipster Holiday</a>
     <nav class="links" aria-label="Sections">
         {links.map((link) => (
             <a href={link.href} class="link">{link.label}</a>
         ))}
-        <a href="#rsvp" class="link link-cta">RSVP</a>
+        {cta && <a href={cta.href} class="link link-cta">{cta.label}</a>}
     </nav>
 </header>
 

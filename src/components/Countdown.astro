@@ -1,10 +1,18 @@
 ---
+// The home page's header: the countdown to the next party, plus a way into
+// this year's invite and down to the archive.
 import CountdownTimer from './CountdownTimer.astro';
+
+interface Props {
+    invite?: { href: string; year: number };
+}
+const { invite } = Astro.props;
 ---
 <div class="countdown-hero" id="countdown-hero">
     <div class="hero-border-top"></div>
 
     <div class="countdown-inner">
+        <p class="overline">The Spencer Family’s</p>
         <h1 class="brand-title">
             <span class="title-top">Hipster</span>
             <span class="title-bottom">Holiday</span>
@@ -19,11 +27,26 @@ import CountdownTimer from './CountdownTimer.astro';
         </div>
 
         <CountdownTimer />
+
+        {invite && (
+            <nav class="ways" aria-label="Where to next">
+                <a href={invite.href} class="way way-main">
+                    See the {invite.year} invite
+                    <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2 8h11M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+                <a href="#archive" class="way">
+                    The archive
+                    <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v11M3.5 8.5 8 13l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+            </nav>
+        )}
     </div>
 
-    <div class="scroll-cue">
-        <div class="scroll-line"></div>
-    </div>
+    {!invite && (
+        <div class="scroll-cue">
+            <div class="scroll-line"></div>
+        </div>
+    )}
 </div>
 
 <style>
@@ -107,6 +130,50 @@ import CountdownTimer from './CountdownTimer.astro';
         flex-shrink: 0;
     }
 
+    .ways {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 56px;
+    }
+
+    .way {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 24px;
+        border-radius: 100px;
+        border: 1px solid rgba(237, 228, 212, 0.22);
+        font-family: var(--font-body);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+    }
+
+    .way:hover,
+    .way:focus-visible {
+        border-color: rgba(237, 228, 212, 0.5);
+        background: rgba(237, 228, 212, 0.06);
+    }
+
+    .way-main {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #1a120b;
+        font-weight: 600;
+    }
+
+    .way-main:hover,
+    .way-main:focus-visible {
+        background: #e2bb6c;
+        border-color: #e2bb6c;
+    }
+
     .scroll-cue {
         position: absolute;
         bottom: 48px;
@@ -140,6 +207,17 @@ import CountdownTimer from './CountdownTimer.astro';
 
         .orn-line {
             width: 40px;
+        }
+
+        .ways {
+            flex-direction: column;
+            align-items: stretch;
+            max-width: 300px;
+            margin: 44px auto 0;
+        }
+
+        .way {
+            justify-content: center;
         }
 
         .hero-border-top {

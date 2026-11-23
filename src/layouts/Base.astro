@@ -10,8 +10,8 @@ interface Props {
 const {
     title,
     description = 'The countdown is on. The 2nd Friday of December. Every year.',
-    image = '/2026/assets/og-2026.jpg',
-    imageAlt = 'The family asleep in a pile on the bed while the new baby is wide awake: Hipster Holiday 2026',
+    image = '/og-home.jpg',
+    imageAlt = 'The Spencer Family’s Hipster Holiday: the 2nd Friday of December, since 2016',
 } = Astro.props;
 const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
 ---

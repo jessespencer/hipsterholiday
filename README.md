@@ -4,7 +4,7 @@ Annual holiday party site at [hipsterholiday.com](https://hipsterholiday.com). B
 
 Between events, the site shows a countdown to the next party (always the 2nd Friday of December at 6 PM MST). Each year gets a unique themed page archived at `/YYYY/`.
 
-The landing page opens on a header themed to the upcoming party (for 2026, a dark bedroom you explore with a nightlight until you find who's still awake), followed by the event details, an RSVP form, and the invite archive (with a floating year nav while you browse it).
+The home page is the countdown, a button into this year's invite, and the invite archive (with a floating year nav while you browse it). This year's invite lives at `/2026/`, the link that gets texted to guests: a header themed to the party (a dark bedroom you explore with a nightlight until you find who's still awake), the event details, an RSVP form, and an "Add to calendar" file.
 
 ## Dev
 
@@ -31,14 +31,15 @@ Responses appear in an `RSVPs` tab. If you change the script later, use **Deploy
 
 ## Structure
 
-- `src/pages/index.astro` — the one-page site (nav, header, details, RSVP, archive, footer)
+- `src/pages/index.astro` — home: countdown, link to this year's invite, archive
+- `src/pages/2026/index.astro` — this year's invite page (themed header, details, RSVP)
 - `src/data/event.ts` — this year's party details and the RSVP endpoint
-- `src/pages/hipster-holiday.ics.ts` — the "Add to calendar" file, built from `event.ts`
+- `src/pages/2026/hipster-holiday.ics.ts` — the "Add to calendar" file, built from `event.ts`
 - `scripts/rsvp-sheet.gs` — Google Apps Script that saves RSVPs to a Google Sheet
 - `src/pages/YYYY/index.astro` — yearly themed event pages
 - `src/components/Hero2026.astro` — this year's interactive themed header
 - `src/components/CountdownTimer.astro` — dynamic countdown timer
-- `src/components/Countdown.astro` — plain countdown header (fallback)
+- `src/components/Countdown.astro` — the home page's countdown header
 - `src/components/InviteGallery.astro` — archive gallery with timeline nav
 - `src/layouts/Base.astro` — shared layout (fonts, global styles, atmosphere)
 - `public/invites/` — invite images for gallery
