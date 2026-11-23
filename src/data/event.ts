@@ -25,7 +25,7 @@ export const event = {
         {
             label: 'Dress code',
             value: 'Your coziest sleepwear',
-            note: 'Pajamas, fun socks, whatever’s comfiest. Slippers optional.',
+            note: 'Pajamas, fun socks, whatever’s comfiest. Slippers not optional.',
         },
         {
             label: 'Gift exchange',
