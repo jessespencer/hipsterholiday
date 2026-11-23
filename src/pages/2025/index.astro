@@ -1,4 +1,5 @@
 ---
+import TopNav from '../../components/TopNav.astro';
 import { ForestParallax } from '../../components/forest/ForestParallax';
 ---
 <html lang="en">
@@ -23,10 +24,11 @@ import { ForestParallax } from '../../components/forest/ForestParallax';
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="image" href="/2025/assets/parallax/family.webp" fetchpriority="high">
     <link rel="preload" as="image" href="/2025/assets/parallax/sky.jpg">
-    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=VT323&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Fraunces and Outfit match Base.astro exactly, so the shared nav reuses the same cached font files -->
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..800,0..100,0..1;1,9..144,400..800,0..100,0..1&family=Outfit:wght@200;300;400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=VT323&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <a href="/" class="back-link">&larr; Back</a>
+    <TopNav />
     <div class="page-wrapper">
         <div class="hero-bg">
             <ForestParallax client:load />
@@ -81,25 +83,6 @@ import { ForestParallax } from '../../components/forest/ForestParallax';
 </html>
 
 <style>
-    .back-link {
-        position: fixed;
-        top: 24px;
-        left: 24px;
-        z-index: 100;
-        font-family: 'Figtree', sans-serif;
-        font-size: 13px;
-        font-weight: 500;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.5);
-        text-decoration: none;
-        transition: color 0.3s;
-    }
-
-    .back-link:hover {
-        color: rgba(255, 255, 255, 0.9);
-    }
-
     * {
         margin: 0;
         padding: 0;
@@ -361,6 +344,13 @@ import { ForestParallax } from '../../components/forest/ForestParallax';
     .file-body p:nth-child(3) { --b: 45; }
     .file-body p:nth-child(4) { --b: 200; }
 
+
+    /* Below this width the date line (about 390px wide, centred) would run into the
+       site nav, so the whole page (art and content together) starts under the nav */
+    @media (max-width: 1280px) {
+        .page-wrapper { padding-top: 64px; }
+        .hero-bg { top: 64px; }
+    }
 
     @media (max-width: 1280px) {
         .hero-bg { width: 100%; max-width: 1280px; }

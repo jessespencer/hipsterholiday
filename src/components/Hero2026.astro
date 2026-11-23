@@ -40,17 +40,17 @@ import CountdownTimer from './CountdownTimer.astro';
     <div class="details">
         <h1 class="title">
             <span class="title-kicker">The Spencer Family’s</span>
-            Hipster Holiday <span class="title-year">2026</span>
+            Hipster <em class="title-italic">Holiday</em> <span class="title-year">2026</span>
         </h1>
         <span class="rule" aria-hidden="true"></span>
         <div class="timer">
             <CountdownTimer />
         </div>
         <a href="#details" class="invite-cue">
-            View the invite
+            The details
             <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v11M3.5 8.5 8 13l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
-        <a href="/hipster-holiday.ics" class="invite-cue calendar-cue">
+        <a href="/2026/hipster-holiday.ics" class="invite-cue calendar-cue">
             Add to calendar
             <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="10" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3M8 8.5v3.5M6.25 10.25h3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
         </a>
@@ -109,12 +109,6 @@ import CountdownTimer from './CountdownTimer.astro';
             awake!.style.top = `${head.y}px`;
             awake!.style.width = `${400 * scale}px`;
 
-            // With reduced motion the light simply rests on the baby
-            if (reduceMotion) {
-                const rest = toScene(BABY_BODY);
-                setLight(rest.x, rest.y);
-            }
-
             // Centre the verse and punchline on the middle of the bed, not on their column
             const verse = hero!.querySelector<HTMLElement>('.poem');
             if (verse) {
@@ -157,13 +151,7 @@ import CountdownTimer from './CountdownTimer.astro';
         window.addEventListener('resize', measure);
         document.fonts?.ready.then(measure);
 
-        if (reduceMotion) {
-            const body = toScene(BABY_BODY);
-            setLight(body.x, body.y);
-            scene.style.setProperty('--m', '1');
-            hero.classList.add('is-lit');
-            wake();
-        } else {
+        {
             const start = toScene(TOUR[0]);
             const cur = { ...start };
             const target = { ...start };
@@ -173,10 +161,27 @@ import CountdownTimer from './CountdownTimer.astro';
             let tourStep = 0;
             let tourTimer = 0;
 
+            // With Reduce Motion the light doesn't glide: it dims, reappears at the
+            // next stop, and is already stretched over the baby when it lands on her.
+            const FADE_MS = 600;
             function advanceTour() {
                 if (userDriving || tourStep >= TOUR.length - 1) return;
-                tourStep++;
-                tourTimer = window.setTimeout(advanceTour, 1800);
+                if (!reduceMotion) {
+                    tourStep++;
+                    tourTimer = window.setTimeout(advanceTour, 1800);
+                    return;
+                }
+                hero!.classList.remove('is-lit');
+                tourTimer = window.setTimeout(() => {
+                    if (userDriving) return;
+                    tourStep++;
+                    const p = toScene(TOUR[tourStep]);
+                    cur.x = target.x = p.x;
+                    cur.y = target.y = p.y;
+                    if (tourStep === TOUR.length - 1) wake();
+                    hero!.classList.add('is-lit');
+                    tourTimer = window.setTimeout(advanceTour, 1800 + FADE_MS);
+                }, FADE_MS);
             }
             setLight(start.x, start.y);
             // The first line plays alone; the light comes on with "not a creature was stirring…"
@@ -253,7 +258,7 @@ import CountdownTimer from './CountdownTimer.astro';
                 cur.y += (target.y - cur.y) * ease;
 
                 const morphTarget = found && !userDriving ? 1 : 0;
-                morph += (morphTarget - morph) * (1 - Math.pow(1 - 0.05, dt / 16.7));
+                morph = reduceMotion ? morphTarget : morph + (morphTarget - morph) * (1 - Math.pow(1 - 0.05, dt / 16.7));
                 const body = toScene(BABY_BODY);
                 setLight(cur.x + (body.x - cur.x) * morph, cur.y + (body.y - cur.y) * morph);
                 scene!.style.setProperty('--m', morph.toFixed(3));
@@ -286,7 +291,8 @@ import CountdownTimer from './CountdownTimer.astro';
                 if (visible) {
                     last = 0;
                     raf = requestAnimationFrame(frame);
-                    fxTimer = window.setInterval(puff, 650);
+                    // Drifting z's and sparkles are pure motion, so Reduce Motion skips them
+                    if (!reduceMotion) fxTimer = window.setInterval(puff, 650);
                 }
             });
             io.observe(hero);
@@ -453,7 +459,7 @@ import CountdownTimer from './CountdownTimer.astro';
 
     .fx-layer :global(.spark) {
         color: var(--gold);
-        text-shadow: 0 0 10px rgba(212, 168, 83, 0.8);
+        text-shadow: 0 0 10px color-mix(in srgb, var(--gold) 80%, transparent);
         animation: twinkle 1.6s ease-out forwards;
     }
 
@@ -487,7 +493,7 @@ import CountdownTimer from './CountdownTimer.astro';
         stroke-linecap: round;
         stroke-dasharray: 60;
         stroke-dashoffset: 60;
-        filter: drop-shadow(0 0 6px rgba(212, 168, 83, 0.7));
+        filter: drop-shadow(0 0 6px color-mix(in srgb, var(--gold) 70%, transparent));
     }
 
     .is-found .awake-lines path {
@@ -608,8 +614,17 @@ import CountdownTimer from './CountdownTimer.astro';
         color: var(--cream);
     }
 
-    .title-year {
+    /* Same as home: "Holiday" in the accent italic, the year plain */
+    .title-italic {
+        font-style: italic;
+        font-weight: 700;
         color: var(--gold);
+        font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 144;
+        padding-right: 0.06em;
+    }
+
+    .title-year {
+        color: var(--cream);
     }
 
     .title-kicker {
@@ -1052,6 +1067,11 @@ import CountdownTimer from './CountdownTimer.astro';
     }
 
     @media (prefers-reduced-motion: reduce) {
+        /* The tour fades the light between stops, so keep each fade short */
+        .hero26 {
+            transition-duration: 0.6s;
+        }
+
         .scene {
             transition: none;
         }

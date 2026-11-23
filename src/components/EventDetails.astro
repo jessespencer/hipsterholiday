@@ -75,7 +75,7 @@ import { event } from '../data/event';
         padding: 13px 28px;
         border-radius: 100px;
         background: var(--gold);
-        color: #1a120b;
+        color: var(--on-gold);
         font-family: var(--font-body);
         font-size: 12px;
         font-weight: 600;
@@ -87,11 +87,11 @@ import { event } from '../data/event';
 
     .cta:hover,
     .cta:focus-visible {
-        background: #e2bb6c;
+        background: var(--gold-hover);
     }
 
     .list {
-        border-top: 1px solid rgba(212, 168, 83, 0.18);
+        border-top: 1px solid color-mix(in srgb, var(--gold) 18%, transparent);
     }
 
     .row {
@@ -99,7 +99,7 @@ import { event } from '../data/event';
         grid-template-columns: 150px minmax(0, 1fr);
         gap: 24px;
         padding: 26px 0;
-        border-bottom: 1px solid rgba(212, 168, 83, 0.18);
+        border-bottom: 1px solid color-mix(in srgb, var(--gold) 18%, transparent);
     }
 
     .label {
