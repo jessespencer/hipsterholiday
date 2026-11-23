@@ -1,24 +1,20 @@
 ---
-// Fixed top navigation: transparent over the hero, solid once you scroll.
-// Each page passes its own links; the brand goes home (or to the top on home).
-interface Link {
-    href: string;
-    label: string;
-}
-interface Props {
-    links: Link[];
-    cta?: Link;
-    brandHref?: string;
-}
-const { links, cta, brandHref = '#countdown-hero' } = Astro.props;
+// Fixed top navigation, the same on every page: the brand goes home, then this
+// year's invite, the archive, and RSVP. A small underline marks where you are.
+// Transparent over the hero, solid once you scroll.
+import { event } from '../data/event';
+
+const invite = `/${event.year}/`;
+const path = Astro.url.pathname;
+const onInvite = path.startsWith(invite) || path === invite.slice(0, -1);
+const onHome = path === '/';
 ---
 <header class="topnav" data-topnav>
-    <a href={brandHref} class="brand">Hipster Holiday</a>
-    <nav class="links" aria-label="Sections">
-        {links.map((link) => (
-            <a href={link.href} class="link">{link.label}</a>
-        ))}
-        {cta && <a href={cta.href} class="link link-cta">{cta.label}</a>}
+    <a href="/" class="brand">Hipster Holiday</a>
+    <nav class="links" aria-label="Site">
+        <a href={invite} class="link" aria-current={onInvite ? 'page' : undefined}>{event.year}</a>
+        <a href="/#archive" class="link" data-archive-link={onHome ? '' : undefined}>Archive</a>
+        <a href={`${invite}#rsvp`} class="link link-cta">RSVP</a>
     </nav>
 </header>
 
@@ -29,16 +25,26 @@ const { links, cta, brandHref = '#countdown-hero' } = Astro.props;
         window.addEventListener('scroll', update, { passive: true });
         update();
     }
+
+    // On home, "Archive" is marked while the archive is on screen
+    const archiveLink = document.querySelector<HTMLElement>('[data-archive-link]');
+    const archive = document.getElementById('archive');
+    if (archiveLink && archive) {
+        new IntersectionObserver(([entry]) => {
+            archiveLink.classList.toggle('is-here', entry.isIntersecting);
+        }, { rootMargin: '-45% 0px -45% 0px' }).observe(archive);
+    }
 </script>
 
 <style>
+    /* Fallbacks keep the nav intact on pages that don't use the Base layout (2025) */
     .topnav {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         z-index: 50;
-        height: var(--nav-h);
+        height: var(--nav-h, 64px);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -52,16 +58,16 @@ const { links, cta, brandHref = '#countdown-hero' } = Astro.props;
         background: rgba(10, 8, 6, 0.78);
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
-        border-bottom-color: color-mix(in srgb, var(--gold) 12%, transparent);
+        border-bottom-color: color-mix(in srgb, var(--gold, #d4a853) 12%, transparent);
     }
 
     .brand {
-        font-family: var(--font-theme);
+        font-family: var(--font-theme, 'Fraunces', Georgia, serif);
         font-weight: 700;
         font-variation-settings: 'SOFT' 100, 'opsz' 24;
         font-size: 18px;
         letter-spacing: -0.01em;
-        color: var(--text-primary);
+        color: var(--text-primary, #ede4d4);
         text-decoration: none;
         white-space: nowrap;
     }
@@ -73,34 +79,56 @@ const { links, cta, brandHref = '#countdown-hero' } = Astro.props;
     }
 
     .link {
-        font-family: var(--font-body);
+        position: relative;
+        font-family: var(--font-body, 'Outfit', -apple-system, sans-serif);
         font-size: 11px;
         font-weight: 500;
         letter-spacing: 2.5px;
         text-transform: uppercase;
-        color: var(--text-mid);
+        color: var(--text-mid, rgba(237, 228, 212, 0.6));
         text-decoration: none;
         transition: color 0.25s ease;
     }
 
     .link:hover,
-    .link:focus-visible {
-        color: var(--text-primary);
+    .link:focus-visible,
+    .link[aria-current='page'],
+    .link.is-here {
+        color: var(--text-primary, #ede4d4);
+    }
+
+    /* You are here: a short accent underline (letter-spacing leaves a trailing gap, so trim it) */
+    .link:not(.link-cta)::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 2.5px;
+        bottom: -7px;
+        height: 1.5px;
+        border-radius: 1px;
+        background: var(--gold, #d4a853);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .link[aria-current='page']::after,
+    .link.is-here::after {
+        transform: scaleX(1);
     }
 
     .link-cta {
         padding: 9px 18px;
         border-radius: 100px;
-        background: var(--gold);
-        color: var(--on-gold);
+        background: var(--gold, #d4a853);
+        color: var(--on-gold, #1a120b);
         font-weight: 600;
         transition: background 0.25s ease, transform 0.25s ease;
     }
 
     .link-cta:hover,
     .link-cta:focus-visible {
-        background: var(--gold-hover);
-        color: var(--on-gold);
+        background: var(--gold-hover, #e2bb6c);
+        color: var(--on-gold, #1a120b);
     }
 
     @media (max-width: 480px) {
@@ -111,6 +139,10 @@ const { links, cta, brandHref = '#countdown-hero' } = Astro.props;
         .link {
             font-size: 10px;
             letter-spacing: 1.8px;
+        }
+
+        .link:not(.link-cta)::after {
+            right: 1.8px;
         }
 
         .link-cta {

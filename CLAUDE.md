@@ -24,7 +24,7 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 - Warm radial glow for atmosphere (no film grain — it was removed)
 - Countdown targets the 2nd Friday of December at 6 PM MST dynamically
 - The invite page's hero is themed to the year (`Hero2026.astro`: dark bedroom, nightlight tour then pointer/touch control, reveal on the baby; under Reduce Motion the light fades between stops) and embeds `CountdownTimer`; `Countdown.astro` is the home page's plain hero
-- `TopNav` takes each page's links and RSVP button as props; home's link preview is `public/og-home.jpg`, the invite page passes its own
+- Home's link preview is `public/og-home.jpg`; the invite page passes its own
 - 2026 hero is a "poster": verse + punchline together on top, the room in the middle, title + countdown along the bottom with "View the invite" and "Add to calendar" buttons; gold is reserved for the punchline, the year, and the baby
 - Theme font for 2026 is Fraunces (`--font-theme`); the archive on home leads with the current year, whose card links to its invite page
 - One accent per page: home runs on red (`<Base accent="red">` swaps the gold tokens), themed invite pages keep their own (gold for 2026)
@@ -32,7 +32,7 @@ Astro + React, static output, GitHub Pages. No Tailwind — scoped CSS in Astro 
 - Year labels sit to the left of each card, pulled out of flow to keep cards centered
 - Never publish the home address: the site says "At the Spencer home" and guests get the address another way
 - RSVPs post (no-cors) to a Google Apps Script web app; with no `RSVP_ENDPOINT` set the form says RSVPs aren't open yet
-- Past yearly pages (2025) have a fixed "Back" link in the top left; the current invite page uses the top nav, whose brand goes home
+- Every page (home, the invite page, 2025) shares one `TopNav` of fixed landmarks: brand → home, {year} → the invite page, Archive → `/#archive`, RSVP → the invite page's form; an accent underline marks the current place. Labels come from `event.ts`, so the nav needs no props
 
 ## Yearly Workflow
 

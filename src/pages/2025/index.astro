@@ -1,4 +1,5 @@
 ---
+import TopNav from '../../components/TopNav.astro';
 ---
 <html lang="en">
 <head>
@@ -20,10 +21,10 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&family=Fraunces:opsz,wght,SOFT@9..144,700,0..100&family=Outfit:wght@500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <a href="/" class="back-link">&larr; Back</a>
+    <TopNav />
     <div class="page-wrapper">
         <div class="hero-bg">
             <img src="/2025/assets/hh-2025-banner.jpg" alt="Hipster Holiday Banner">
@@ -68,25 +69,6 @@
 </html>
 
 <style>
-    .back-link {
-        position: fixed;
-        top: 24px;
-        left: 24px;
-        z-index: 100;
-        font-family: 'Figtree', sans-serif;
-        font-size: 13px;
-        font-weight: 500;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.5);
-        text-decoration: none;
-        transition: color 0.3s;
-    }
-
-    .back-link:hover {
-        color: rgba(255, 255, 255, 0.9);
-    }
-
     * {
         margin: 0;
         padding: 0;
@@ -240,6 +222,13 @@
     .event-content strong { font-weight: 700; }
 
 
+
+    /* Below this width the date line would run into the site nav, so the whole page
+       (art and content together) starts under the nav instead */
+    @media (max-width: 960px) {
+        .page-wrapper { padding-top: 64px; }
+        .hero-bg { top: 64px; }
+    }
 
     @media (max-width: 1280px) {
         .hero-bg { width: 100%; max-width: 1280px; }

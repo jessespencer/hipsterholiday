@@ -10,13 +10,7 @@ import { event } from '../data/event';
 const invite = `/${event.year}/`;
 ---
 <Base title="Hipster Holiday" accent="red">
-    <TopNav
-        links={[
-            { href: invite, label: String(event.year) },
-            { href: '#archive', label: 'Archive' },
-        ]}
-        cta={{ href: `${invite}#rsvp`, label: 'RSVP' }}
-    />
+    <TopNav />
     <main>
         <Countdown invite={{ href: invite, year: event.year }} />
         <InviteGallery />
