@@ -52,7 +52,7 @@ const { links, cta, brandHref = '#countdown-hero' } = Astro.props;
         background: rgba(10, 8, 6, 0.78);
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
-        border-bottom-color: rgba(212, 168, 83, 0.12);
+        border-bottom-color: color-mix(in srgb, var(--gold) 12%, transparent);
     }
 
     .brand {
@@ -92,15 +92,15 @@ const { links, cta, brandHref = '#countdown-hero' } = Astro.props;
         padding: 9px 18px;
         border-radius: 100px;
         background: var(--gold);
-        color: #1a120b;
+        color: var(--on-gold);
         font-weight: 600;
         transition: background 0.25s ease, transform 0.25s ease;
     }
 
     .link-cta:hover,
     .link-cta:focus-visible {
-        background: #e2bb6c;
-        color: #1a120b;
+        background: var(--gold-hover);
+        color: var(--on-gold);
     }
 
     @media (max-width: 480px) {

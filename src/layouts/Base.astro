@@ -5,6 +5,8 @@ interface Props {
     /** Link-preview image, relative to the site root (1200×630) */
     image?: string;
     imageAlt?: string;
+    /** The page's one accent color: gold (themed invite pages) or red (home) */
+    accent?: 'gold' | 'red';
 }
 
 const {
@@ -12,11 +14,12 @@ const {
     description = 'The countdown is on. The 2nd Friday of December. Every year.',
     image = '/og-home.jpg',
     imageAlt = 'The Spencer Family’s Hipster Holiday: the 2nd Friday of December, since 2016',
+    accent = 'gold',
 } = Astro.props;
 const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
 ---
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-accent={accent}>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,6 +59,9 @@ const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
         --accent-glow: rgba(191, 58, 43, 0.15);
         --gold: #d4a853;
         --gold-dim: rgba(212, 168, 83, 0.4);
+        --gold-hover: #e2bb6c;
+        /* Text on a solid accent button */
+        --on-gold: #1a120b;
         --cream: #f2e8d5;
         --text-primary: #ede4d4;
         --text-dim: rgba(237, 228, 212, 0.35);
@@ -64,6 +70,16 @@ const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
         --font-body: 'Outfit', -apple-system, sans-serif;
         --font-theme: 'Fraunces', 'Georgia', serif;
         --nav-h: 64px;
+    }
+
+    /* Home runs on red alone, to match its title and the light invite poster.
+       Components use the gold tokens for "the accent", so swapping them here is enough. */
+    :root[data-accent='red'] {
+        --gold: var(--accent);
+        --gold-dim: rgba(191, 58, 43, 0.45);
+        --gold-hover: #d4493a;
+        --on-gold: #fbf3e6;
+        --cd-date-opacity: 0.9;
     }
 
     * {
