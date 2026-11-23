@@ -24,8 +24,9 @@ function setup() {
 function doPost(e) {
   const p = (e && e.parameter) || {};
 
-  // Honeypot: real visitors never fill this field
-  if (p.company) return ok();
+  // Honeypot: real visitors never fill this field (`company` is its old name,
+  // dropped because browser autofill filled it for real guests)
+  if (p.hh_trap || p.company) return ok();
 
   // The site requires these, so anything without them isn't a real RSVP
   if (!String(p.name || '').trim() || !String(p.email || '').trim()) return ok();
