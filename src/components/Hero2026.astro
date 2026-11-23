@@ -109,12 +109,6 @@ import CountdownTimer from './CountdownTimer.astro';
             awake!.style.top = `${head.y}px`;
             awake!.style.width = `${400 * scale}px`;
 
-            // With reduced motion the light simply rests on the baby
-            if (reduceMotion) {
-                const rest = toScene(BABY_BODY);
-                setLight(rest.x, rest.y);
-            }
-
             // Centre the verse and punchline on the middle of the bed, not on their column
             const verse = hero!.querySelector<HTMLElement>('.poem');
             if (verse) {
@@ -157,13 +151,7 @@ import CountdownTimer from './CountdownTimer.astro';
         window.addEventListener('resize', measure);
         document.fonts?.ready.then(measure);
 
-        if (reduceMotion) {
-            const body = toScene(BABY_BODY);
-            setLight(body.x, body.y);
-            scene.style.setProperty('--m', '1');
-            hero.classList.add('is-lit');
-            wake();
-        } else {
+        {
             const start = toScene(TOUR[0]);
             const cur = { ...start };
             const target = { ...start };
@@ -173,10 +161,27 @@ import CountdownTimer from './CountdownTimer.astro';
             let tourStep = 0;
             let tourTimer = 0;
 
+            // With Reduce Motion the light doesn't glide: it dims, reappears at the
+            // next stop, and is already stretched over the baby when it lands on her.
+            const FADE_MS = 600;
             function advanceTour() {
                 if (userDriving || tourStep >= TOUR.length - 1) return;
-                tourStep++;
-                tourTimer = window.setTimeout(advanceTour, 1800);
+                if (!reduceMotion) {
+                    tourStep++;
+                    tourTimer = window.setTimeout(advanceTour, 1800);
+                    return;
+                }
+                hero!.classList.remove('is-lit');
+                tourTimer = window.setTimeout(() => {
+                    if (userDriving) return;
+                    tourStep++;
+                    const p = toScene(TOUR[tourStep]);
+                    cur.x = target.x = p.x;
+                    cur.y = target.y = p.y;
+                    if (tourStep === TOUR.length - 1) wake();
+                    hero!.classList.add('is-lit');
+                    tourTimer = window.setTimeout(advanceTour, 1800 + FADE_MS);
+                }, FADE_MS);
             }
             setLight(start.x, start.y);
             // The first line plays alone; the light comes on with "not a creature was stirring…"
@@ -253,7 +258,7 @@ import CountdownTimer from './CountdownTimer.astro';
                 cur.y += (target.y - cur.y) * ease;
 
                 const morphTarget = found && !userDriving ? 1 : 0;
-                morph += (morphTarget - morph) * (1 - Math.pow(1 - 0.05, dt / 16.7));
+                morph = reduceMotion ? morphTarget : morph + (morphTarget - morph) * (1 - Math.pow(1 - 0.05, dt / 16.7));
                 const body = toScene(BABY_BODY);
                 setLight(cur.x + (body.x - cur.x) * morph, cur.y + (body.y - cur.y) * morph);
                 scene!.style.setProperty('--m', morph.toFixed(3));
@@ -286,7 +291,8 @@ import CountdownTimer from './CountdownTimer.astro';
                 if (visible) {
                     last = 0;
                     raf = requestAnimationFrame(frame);
-                    fxTimer = window.setInterval(puff, 650);
+                    // Drifting z's and sparkles are pure motion, so Reduce Motion skips them
+                    if (!reduceMotion) fxTimer = window.setInterval(puff, 650);
                 }
             });
             io.observe(hero);
@@ -1052,6 +1058,11 @@ import CountdownTimer from './CountdownTimer.astro';
     }
 
     @media (prefers-reduced-motion: reduce) {
+        /* The tour fades the light between stops, so keep each fade short */
+        .hero26 {
+            transition-duration: 0.6s;
+        }
+
         .scene {
             transition: none;
         }
